@@ -1,0 +1,14 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: demo
+
+  datasource:
+    platform: mysql
+    url: jdbc:mysql://rc-riley-server-db.cmhxc9hlcnku.ap-northeast-2.rds.amazonaws.com/RC_coupang_eats_d_Riley?autoReconnect=true # 변경해주세요
+    username: riley # 변경해주세요
+    password: June0204!! # 변경해주세요
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
+    # driver-class-name: com.mysql.jdbc.Driver # mysql 5버전
