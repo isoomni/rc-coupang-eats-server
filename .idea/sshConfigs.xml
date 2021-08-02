@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="13.209.82.241" id="0635df42-b03d-4fae-a7a5-d9cfc965df3d" keyPath="D:\이수민\개인공부\라이징 캠프-서버\rc_server_key\RC_Riley_server.ppk" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+    </configs>
+  </component>
+</project>
