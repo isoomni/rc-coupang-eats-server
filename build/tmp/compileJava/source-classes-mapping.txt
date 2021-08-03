@@ -1,5 +1,3 @@
-com/example/demo/src/restuarants/RestaurantsProvider.java
- com.example.demo.src.restuarants.RestaurantsProvider
 com/example/demo/src/home/HomeService.java
  com.example.demo.src.home.HomeService
 com/example/demo/src/user/model/PostUserReq.java
@@ -10,16 +8,12 @@ com/example/demo/src/home/HomeProvider.java
  com.example.demo.src.home.HomeProvider
 com/example/demo/src/home/model/GetHomeRes.java
  com.example.demo.src.home.model.GetHomeRes
-com/example/demo/src/restuarants/RestaurantsDao.java
- com.example.demo.src.restuarants.RestaurantsDao
 com/example/demo/src/home/HomeDao.java
  com.example.demo.src.home.HomeDao
 com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
 com/example/demo/src/user/model/PostLoginRes.java
  com.example.demo.src.user.model.PostLoginRes
-com/example/demo/src/restuarants/model/GetRestaurantsRes.java
- com.example.demo.src.restuarants.model.GetRestaurantsRes
 com/example/demo/src/user/UserDao.java
  com.example.demo.src.user.UserDao
 com/example/demo/utils/AES128.java
@@ -34,14 +28,10 @@ com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
 com/example/demo/src/home/model/GetPopularFranchiseRes.java
  com.example.demo.src.home.model.GetPopularFranchiseRes
-com/example/demo/src/restuarants/RestaurantsController.java
- com.example.demo.src.restuarants.RestaurantsController
 com/example/demo/src/home/HomeController.java
  com.example.demo.src.home.HomeController
 com/example/demo/src/user/model/PostLoginReq.java
  com.example.demo.src.user.model.PostLoginReq
-com/example/demo/src/restuarants/RestaurantsService.java
- com.example.demo.src.restuarants.RestaurantsService
 com/example/demo/src/home/model/GetFilteredRes.java
  com.example.demo.src.home.model.GetFilteredRes
 com/example/demo/config/secret/Secret.java
