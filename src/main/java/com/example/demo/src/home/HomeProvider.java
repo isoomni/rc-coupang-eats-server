@@ -37,10 +37,29 @@ public class HomeProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-    public GetHomeRes getHomeByFilter(String chitaDeliveryStatus) throws BaseException{
+    public GetHomeRes getHomeByChitaFilter(String chitaDeliveryStatus) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByFilter(chitaDeliveryStatus);
+            GetHomeRes getHomeRes = homeDao.getHomeByChitaFilter(chitaDeliveryStatus);
+            return getHomeRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    public GetHomeRes getHomeByCouponFilter(String couponStatus) throws BaseException{
+        try{
+            GetHomeRes getHomeRes = homeDao.getHomeByCouponFilter(couponStatus);
+            return getHomeRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    public GetHomeRes getHomeByFilter(String chitaDeliveryStatus, String couponStatus) throws BaseException{
+        try{
+            GetHomeRes getHomeRes = homeDao.getHomeByFilter(chitaDeliveryStatus, couponStatus);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
