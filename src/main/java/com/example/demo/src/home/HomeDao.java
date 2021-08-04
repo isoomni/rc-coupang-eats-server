@@ -107,7 +107,7 @@ public class HomeDao {
 
         // 골라먹는 맛집
         String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.restaurantName, R.chitaDeliveryStatus, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE chitaDeliveryStatus = 'Y' GROUP BY RV.restaurantIdx;";
+                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE chitaDeliveryStatus = ? GROUP BY RV.restaurantIdx;";
         String getHomeByFilterParams = chitaDeliveryStatus;
 
         return new GetHomeRes(
