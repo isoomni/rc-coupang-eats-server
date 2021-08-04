@@ -12,6 +12,8 @@ com/example/demo/src/home/HomeDao.java
  com.example.demo.src.home.HomeDao
 com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
+com/example/demo/src/home/model/GetCouponBannerImgListRes.java
+ com.example.demo.src.home.model.GetCouponBannerImgListRes
 com/example/demo/src/user/model/PostLoginRes.java
  com.example.demo.src.user.model.PostLoginRes
 com/example/demo/src/user/UserDao.java
@@ -32,6 +34,8 @@ com/example/demo/src/home/HomeController.java
  com.example.demo.src.home.HomeController
 com/example/demo/src/user/model/PostLoginReq.java
  com.example.demo.src.user.model.PostLoginReq
+com/example/demo/src/home/model/GetPromoBannerImgListRes.java
+ com.example.demo.src.home.model.GetPromoBannerImgListRes
 com/example/demo/src/home/model/GetFilteredRes.java
  com.example.demo.src.home.model.GetFilteredRes
 com/example/demo/config/secret/Secret.java
@@ -44,6 +48,8 @@ com/example/demo/src/user/UserController.java
  com.example.demo.src.user.UserController
 com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
+com/example/demo/src/home/model/GetNewRestaurantsListRes.java
+ com.example.demo.src.home.model.GetNewRestaurantsListRes
 com/example/demo/src/user/model/User.java
  com.example.demo.src.user.model.User
 com/example/demo/src/user/UserService.java

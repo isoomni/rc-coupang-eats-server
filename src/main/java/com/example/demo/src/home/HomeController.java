@@ -35,10 +35,14 @@ public class HomeController {
      */
     @ResponseBody
     @GetMapping("") // (GET) 127.0.0.1:9000/app/homes
-    public BaseResponse<GetHomeRes> getHome(){
+    public BaseResponse<GetHomeRes> getHome(@RequestParam(required = false) String chitaDeliveryStatus){
         // Get Users
         try{
-            GetHomeRes getHomeRes = homeProvider.getHome(); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+            if(chitaDeliveryStatus == null){ // city 값이 없는 경우에는
+                GetHomeRes getHomeRes = homeProvider.getHome(); //전체 숙소를 조회하게 했고
+                return new BaseResponse<>(getHomeRes);
+            }
+            GetHomeRes getHomeRes = homeProvider.getHomeByFilter(chitaDeliveryStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
             return new BaseResponse<>(getHomeRes);
         }  catch(BaseException exception){
         return new BaseResponse<>((exception.getStatus()));

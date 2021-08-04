@@ -38,6 +38,16 @@ public class HomeProvider {
         }
     }
 
+    public GetHomeRes getHomeByFilter(String chitaDeliveryStatus) throws BaseException{
+        try{
+            GetHomeRes getHomeRes = homeDao.getHomeByFilter(chitaDeliveryStatus);
+            return getHomeRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
 
 

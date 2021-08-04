@@ -10,7 +10,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class GetHomeRes {
+    private List<GetPromoBannerImgListRes> getPromoBannerImgListRes;
     private List<GetRestaurantCategoryListRes> getRestaurantCategoryListRes;
     private List<GetPopularFranchiseRes> getPopularFranchiseRes;
+    private GetCouponBannerImgListRes getCouponBannerImgListRes;
+    private List<GetNewRestaurantsListRes> getNewRestaurantsListRes;
     private List<GetFilteredRes> getFilteredRes;
 }
