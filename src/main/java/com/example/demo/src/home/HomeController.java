@@ -8,10 +8,6 @@ import com.example.demo.src.home.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-
-import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/app/homes")
@@ -35,26 +31,38 @@ public class HomeController {
      */
     @ResponseBody
     @GetMapping("") // (GET) 127.0.0.1:9000/app/homes
-    public BaseResponse<GetHomeRes> getHome(@RequestParam(required = false) String chitaDeliveryStatus, @RequestParam(required = false) String couponStatus){
+    public BaseResponse<GetHomeRes> getHome(@RequestParam(required = false) String chitaDeliveryStatus, @RequestParam(required = false) String couponStatus, @RequestParam(required = false) Double minDeliveryAmount){
         // Get Users
         try{
-            if(chitaDeliveryStatus == null && couponStatus == null){ // 치타 배달에 대한 값 혹은 쿠폰에 대한 값이 쿼리 스트링으로 전달 받지 못하는 경우에는
+            if(chitaDeliveryStatus == null && couponStatus == null && minDeliveryAmount == null){ // 치타 배달에 대한 값 혹은 쿠폰에 대한 값이 쿼리 스트링으로 전달 받지 못하는 경우에는
                 GetHomeRes getHomeRes = homeProvider.getHome(); //전체 식당를 조회하고
                 return new BaseResponse<>(getHomeRes);
-            }else if (chitaDeliveryStatus != null && couponStatus == null){  // 치타 배달 값만 전달된 경우에는
+            }else if (chitaDeliveryStatus != null && couponStatus == null && minDeliveryAmount == null){  // 치타 배달 값만 전달된 경우에는
                 GetHomeRes getHomeRes = homeProvider.getHomeByChitaFilter(chitaDeliveryStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
-            }else if (chitaDeliveryStatus == null && couponStatus != null) { // 쿠폰 값만 전달된 경우에는
+            }else if (chitaDeliveryStatus == null && couponStatus != null && minDeliveryAmount == null) { // 쿠폰 값만 전달된 경우에는
                 GetHomeRes getHomeRes = homeProvider.getHomeByCouponFilter(couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
-            } GetHomeRes getHomeRes = homeProvider.getHomeByFilter(chitaDeliveryStatus, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+            }else if (chitaDeliveryStatus == null && couponStatus == null && minDeliveryAmount != null) { // 최소 주문 값만 전달된 경우에는
+                GetHomeRes getHomeRes = homeProvider.getHomeByMinDeliveryAmountFilter(minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                return new BaseResponse<>(getHomeRes);
+            }else if (chitaDeliveryStatus != null && couponStatus == null && minDeliveryAmount != null) { // 치타 배달 값, 최소 주문 값만 전달된 경우에는
+                GetHomeRes getHomeRes = homeProvider.getHomeByChitaAndMinFilter(chitaDeliveryStatus, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                return new BaseResponse<>(getHomeRes);
+            }else if (chitaDeliveryStatus != null && couponStatus != null && minDeliveryAmount == null) { // 치타 배달 값, 쿠폰 값만 전달된 경우에는
+                GetHomeRes getHomeRes = homeProvider.getHomeByChitaAndCouponFilter(chitaDeliveryStatus, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                return new BaseResponse<>(getHomeRes);
+            }else if (chitaDeliveryStatus == null && couponStatus != null && minDeliveryAmount != null) { // 쿠폰 값, 최소 주문 값만 전달된 경우에는
+                GetHomeRes getHomeRes = homeProvider.getHomeByCouponAndMinFilter(minDeliveryAmount, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                return new BaseResponse<>(getHomeRes);
+
+            } GetHomeRes getHomeRes = homeProvider.getHomeByFilter(chitaDeliveryStatus, couponStatus, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
             return new BaseResponse<>(getHomeRes);
 
         }  catch(BaseException exception){
         return new BaseResponse<>((exception.getStatus()));
         }
     }
-
 
 
     /**

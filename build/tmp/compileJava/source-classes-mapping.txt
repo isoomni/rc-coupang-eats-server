@@ -1,3 +1,7 @@
+com/example/demo/src/restaurant/RestaurantDao.java
+ com.example.demo.src.restaurant.RestaurantDao
+com/example/demo/src/restaurant/RestaurantService.java
+ com.example.demo.src.restaurant.RestaurantService
 com/example/demo/src/home/HomeService.java
  com.example.demo.src.home.HomeService
 com/example/demo/src/user/model/PostUserReq.java
@@ -24,6 +28,8 @@ com/example/demo/config/BaseResponseStatus.java
  com.example.demo.config.BaseResponseStatus
 com/example/demo/src/user/model/PatchUserReq.java
  com.example.demo.src.user.model.PatchUserReq
+com/example/demo/src/restaurant/RestaurantProvider.java
+ com.example.demo.src.restaurant.RestaurantProvider
 com/example/demo/src/WebSecurityConfig.java
  com.example.demo.src.WebSecurityConfig
 com/example/demo/src/test/TestController.java
@@ -60,7 +66,13 @@ com/example/demo/config/BaseException.java
  com.example.demo.config.BaseException
 com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
+com/example/demo/src/restaurant/RestaurantController.java
+ com.example.demo.src.restaurant.RestaurantController
 com/example/demo/utils/JwtService.java
  com.example.demo.utils.JwtService
 com/example/demo/src/user/UserProvider.java
  com.example.demo.src.user.UserProvider
+com/example/demo/src/restaurant/model/GetCategoryNameRes.java
+ com.example.demo.src.restaurant.model.GetCategoryNameRes
+com/example/demo/src/restaurant/model/GetRestaurantRes.java
+ com.example.demo.src.restaurant.model.GetRestaurantRes
