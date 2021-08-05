@@ -26,21 +26,22 @@ public class HomeDao {
 
 
     public GetHomeRes getHome(){
+
         // 프로모션 배너
         String getHomeQuery1 = "SELECT PBIU.promoBannerImgUrl FROM RC_coupang_eats_d_Riley.PromoBannerImgUrl PBIU WHERE status = 'Y'";
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance,  if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx GROUP BY RV.restaurantIdx;";
 
 
@@ -102,16 +103,16 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance,  if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.chitaDeliveryStatus = ? GROUP BY RV.restaurantIdx;";
         String getHomeByFilterParams1 = chitaDeliveryStatus;
 
@@ -174,16 +175,16 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance,  if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.couponStatus = ? GROUP BY RV.restaurantIdx;";
 
 
@@ -247,17 +248,17 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.minDeliveryAmount = ? GROUP BY RV.restaurantIdx;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
+                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.minDeliveryAmount <= ? GROUP BY RV.restaurantIdx;";
 
 
         Double getHomeByFilterParams2 = minDeliveryAmount;
@@ -321,17 +322,17 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.chitaDeliveryStatus = ? and R.minDeliveryAmount = ? GROUP BY RV.restaurantIdx;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
+                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.chitaDeliveryStatus = ? and R.minDeliveryAmount <= ? GROUP BY RV.restaurantIdx;";
 
 
         String getHomeByFilterParams1 = chitaDeliveryStatus;
@@ -395,16 +396,16 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.chitaDeliveryStatus = ? and R.couponStatus = ? GROUP BY RV.restaurantIdx;";
 
 
@@ -469,17 +470,17 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.minDeliveryAmount = ? and R.couponStatus = ? GROUP BY RV.restaurantIdx;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
+                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.minDeliveryAmount <= ? and R.couponStatus = ? GROUP BY RV.restaurantIdx;";
 
 
         Double getHomeByFilterParams1 = minDeliveryAmount;
@@ -542,17 +543,17 @@ public class HomeDao {
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
         // 인기 프랜차이즈
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee\n" +
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
                 "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx GROUP BY RV.restaurantIdx;";
         // 쿠팡잇츠 쿠폰 배너
         String getHomeQuery4 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance,R.deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) GROUP BY RV.restaurantIdx";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, R.deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.chitaDeliveryStatus = ? and R.couponStatus = ? and R.minDeliveryAmount = ? GROUP BY RV.restaurantIdx;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
+                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.chitaDeliveryStatus = ? and R.couponStatus = ? and R.minDeliveryAmount <= ? GROUP BY RV.restaurantIdx;";
 
         String getHomeByFilterParams1 = chitaDeliveryStatus;
         String getHomeByFilterParams2 = couponStatus;
