@@ -28,7 +28,11 @@ public class RestaurantProvider {
         this.restaurantDao = restaurantDao;
     }
 
-    // 여기서부터 본문
+    /**
+     * 카테고리 별 식당 조회 API
+     * [GET] /restaurants/:restaurantCategoryIdx
+     * @return BaseResponse<GetRestaurantRes>
+     */
     public GetRestaurantRes getRestaurant(int restaurantCategoryIdx) throws BaseException{
         try{
             GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurant(restaurantCategoryIdx);
@@ -109,6 +113,71 @@ public class RestaurantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+    /**
+     * 식당 메뉴 조회 API
+     * [GET] /restaurants/:restaurantIdx
+     * @return BaseResponse<GetRestaurantRes>
+     */
+
+    public GetRestaurantMenuRes getRestaurantMenu(int userIdx, int restaurantIdx) throws BaseException {
+        try{
+            GetRestaurantMenuRes getRestaurantMenuRes = restaurantDao.getRestaurantMenu(userIdx, restaurantIdx);
+            return getRestaurantMenuRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 식당 리뷰 조회 API
+     * [GET] /restaurants/:restaurantIdx/review
+     * @return BaseResponse<GetReviewRes>
+     */
+    public GetReviewsRes getReviews(int restaurantIdx) throws BaseException {
+        try{
+            GetReviewsRes getReviewsRes = restaurantDao.getReviews(restaurantIdx);
+            return getReviewsRes;
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 사진 리뷰 필터
+    public GetReviewsRes getReviewsByImg(int restaurantIdx, String reviewImgStatus) throws BaseException {
+        try{
+            GetReviewsRes getReviewsRes = restaurantDao.getReviewsByImg(restaurantIdx, reviewImgStatus);
+            return getReviewsRes;
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    // 최신순 정렬 필터
+    public GetReviewsRes getReviewsBySorting(int restaurantIdx) throws BaseException {
+        try{
+            GetReviewsRes getReviewsRes = restaurantDao.getReviewsBySorting(restaurantIdx);
+            return getReviewsRes;
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    // 사진 리뷰와 최신순 정렬 필터 모두 적용
+    public GetReviewsRes getReviewsByImgAndSorting(int restaurantIdx, String reviewImgStatus) throws BaseException {
+        try{
+            GetReviewsRes getReviewsRes = restaurantDao.getReviewsByImgAndSorting(restaurantIdx, reviewImgStatus);
+            return getReviewsRes;
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+
 
 
     /**

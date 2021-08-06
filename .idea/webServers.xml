@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="7c9125f2-2944-4eb7-a8ac-cdc1577fab7f" name="spring_coupang_eats_riley" url="http://product.riley1.site">
-        <fileTransfer rootFolder="/var/www/html/product/coupang_eats_test_server_riley" accessType="SFTP" host="13.209.82.241" port="22" sshConfigId="0635df42-b03d-4fae-a7a5-d9cfc965df3d" sshConfig="ubuntu@13.209.82.241:22 key" keyPair="true">
+        <fileTransfer rootFolder="/var/www/html/product/coupang_eats_test_server_riley" accessType="SFTP" host="13.125.107.59" port="22" sshConfigId="0635df42-b03d-4fae-a7a5-d9cfc965df3d" sshConfig="ubuntu@13.125.107.59:22 key" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

@@ -1,7 +1,5 @@
 package com.example.demo.src.restaurant;
 
-import com.example.demo.src.restaurant.RestaurantProvider;
-import com.example.demo.src.restaurant.RestaurantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -32,7 +30,7 @@ public class RestaurantController {
      * @return BaseResponse<GetRestaurantRes>
      */
     @ResponseBody
-    @GetMapping("/{restaurantCategoryIdx}") // (GET) 127.0.0.1:9000/app/restaurants/:restaurantCategoryIdx
+    @GetMapping("/{restaurantCategoryIdx}") // (GET) 127.0.0.1:9090/app/restaurants/:restaurantCategoryIdx
     public BaseResponse<GetRestaurantRes> getRestaurant(@PathVariable("restaurantCategoryIdx") int restaurantCategoryIdx, @RequestParam(required = false) String chitaDeliveryStatus, @RequestParam(required = false) String couponStatus, @RequestParam(required = false) Double minDeliveryAmount){
         try{
             if(chitaDeliveryStatus == null && couponStatus == null && minDeliveryAmount == null){ // 치타 배달에 대한 값 혹은 쿠폰에 대한 값이 쿼리 스트링으로 전달 받지 못하는 경우에는
@@ -61,6 +59,46 @@ public class RestaurantController {
             return new BaseResponse<>(getRestaurantRes);
 
         }  catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    /**
+     * 식당 메뉴 조회 API
+     * [GET] /restaurants/:userIdx/:restaurantIdx
+     * @return BaseResponse<GetRestaurantRes>
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/{restaurantIdx}") // (GET) 127.0.0.1:9090/app/restaurants/:userIdx/:restaurantIdx
+    public BaseResponse<GetRestaurantMenuRes> getRestaurantMenu(@PathVariable("userIdx") int userIdx, @PathVariable("restaurantIdx") int restaurantIdx){
+        try{
+            GetRestaurantMenuRes getRestaurantMenuRes = restaurantProvider.getRestaurantMenu(userIdx, restaurantIdx);
+            return new BaseResponse<>(getRestaurantMenuRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 식당 리뷰 조회 API
+     * [GET] /restaurants/:restaurantIdx/reviews
+     * @return BaseResponse<GetReviewRes>
+     */
+    @ResponseBody
+    @GetMapping("/{restaurantIdx}/reviews")// (GET) 127.0.0.1:9090/app/restaurants/:restaurantIdx/reviews
+    public BaseResponse<GetReviewsRes> getReviews(@PathVariable("restaurantIdx") int restaurantIdx, @RequestParam(required = false) String reviewImgStatus, @RequestParam(required = false) String latestSorting){
+        try{
+            if(reviewImgStatus == null && latestSorting == null){  // 사진 리뷰를 보겠다는 값과 최신순 정렬 값 모두 전달 받지 못하는 경우
+                GetReviewsRes getReviewsRes = restaurantProvider.getReviews(restaurantIdx);
+                return new BaseResponse<>(getReviewsRes);
+            } else if (reviewImgStatus != null && latestSorting == null) { // 사진 리뷰만 보겠다는 값만 전달 받고 최신순 정렬 값은 전달 받지 못한 경우
+                GetReviewsRes getReviewsRes = restaurantProvider.getReviewsByImg(restaurantIdx, reviewImgStatus);
+                return new BaseResponse<>(getReviewsRes);
+            } else if (latestSorting == null && latestSorting != null) { // 사진 리뷰만 보겠다는 값은 전달 받지 못하고 최신순 정렬 값만 전달 받은 경우
+                GetReviewsRes getReviewsRes = restaurantProvider.getReviewsBySorting(restaurantIdx);
+                return new BaseResponse<>(getReviewsRes);
+            }GetReviewsRes getReviewsRes = restaurantProvider.getReviewsByImgAndSorting(restaurantIdx, reviewImgStatus); // 모든 값을 전달 받은 경우
+            return new BaseResponse<>(getReviewsRes);
+        }catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
