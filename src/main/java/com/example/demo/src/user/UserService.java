@@ -38,7 +38,7 @@ public class UserService {
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
         //중복
-        if(userProvider.checkEmail(postUserReq.getEmail()) ==1){
+        if(userProvider.checkEmail(postUserReq.getEmailAddress()) ==1){
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
 
@@ -56,6 +56,7 @@ public class UserService {
             String jwt = jwtService.createJwt(userIdx);
             return new PostUserRes(jwt,userIdx);
         } catch (Exception exception) {
+            exception.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -67,6 +68,7 @@ public class UserService {
                 throw new BaseException(MODIFY_FAIL_USERNAME);
             }
         } catch(Exception exception){
+            exception.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }

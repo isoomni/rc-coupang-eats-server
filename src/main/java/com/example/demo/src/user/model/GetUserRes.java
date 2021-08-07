@@ -11,7 +11,6 @@ import lombok.Setter;
 public class GetUserRes {
     private int userIdx;
     private String userName;
-    private String ID;
-    private String email;
+    private String emailAddress;
     private String password;
 }

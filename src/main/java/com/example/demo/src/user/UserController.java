@@ -46,14 +46,14 @@ public class UserController {
     //Query String
     @ResponseBody
     @GetMapping("") // (GET) 127.0.0.1:9000/app/users
-    public BaseResponse<List<GetUserRes>> getUsers(@RequestParam(required = false) String Email) {
+    public BaseResponse<List<GetUserRes>> getUsers(@RequestParam(required = false) String emailAddress) {
         try{
-            if(Email == null){
+            if(emailAddress == null){
                 List<GetUserRes> getUsersRes = userProvider.getUsers();
                 return new BaseResponse<>(getUsersRes);
             }
             // Get Users
-            List<GetUserRes> getUsersRes = userProvider.getUsersByEmail(Email);
+            List<GetUserRes> getUsersRes = userProvider.getUsersByEmail(emailAddress);
             return new BaseResponse<>(getUsersRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -89,11 +89,11 @@ public class UserController {
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
-        if(postUserReq.getEmail() == null){
+        if(postUserReq.getEmailAddress() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
         }
         //이메일 정규표현
-        if(!isRegexEmail(postUserReq.getEmail())){
+        if(!isRegexEmail(postUserReq.getEmailAddress())){
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
         try{
@@ -145,6 +145,29 @@ public class UserController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+    }
+    /**
+     * 로그 테스트 API
+     * [GET] /test/log
+     * @return String
+     */
+    @ResponseBody
+    @GetMapping("/log")
+    public String getAll() {
+        System.out.println("테스트");
+//        trace, debug 레벨은 Console X, 파일 로깅 X
+//        logger.trace("TRACE Level 테스트");
+//        logger.debug("DEBUG Level 테스트");
+
+//        info 레벨은 Console 로깅 O, 파일 로깅 X
+        logger.info("INFO Level 테스트");
+//        warn 레벨은 Console 로깅 O, 파일 로깅 O
+        logger.warn("Warn Level 테스트");
+//        error 레벨은 Console 로깅 O, 파일 로깅 O (app.log 뿐만 아니라 error.log 에도 로깅 됨)
+//        app.log 와 error.log 는 날짜가 바뀌면 자동으로 *.gz 으로 압축 백업됨
+        logger.error("ERROR Level 테스트");
+
+        return "Success Test";
     }
 
 
