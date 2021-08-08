@@ -135,7 +135,7 @@ public class UserController {
             //userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
             //같다면 유저네임 변경
             PatchUserReq patchUserReq = new PatchUserReq(userIdx,user.getUserName());
             userService.modifyUserName(patchUserReq);
