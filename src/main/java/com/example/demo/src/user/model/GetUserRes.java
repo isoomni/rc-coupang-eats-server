@@ -12,5 +12,5 @@ public class GetUserRes {
     private int userIdx;
     private String userName;
     private String emailAddress;
-    private String password;
+    private String realPassWordForMe;
 }

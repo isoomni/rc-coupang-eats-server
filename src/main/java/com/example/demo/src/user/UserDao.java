@@ -26,7 +26,7 @@ public class UserDao {
                         rs.getInt("userIdx"),
                         rs.getString("userName"),
                         rs.getString("emailAddress"),
-                        rs.getString("password"))
+                        rs.getString("realPassWordForMe"))
                 );
     }
 
@@ -38,7 +38,7 @@ public class UserDao {
                         rs.getInt("userIdx"),
                         rs.getString("userName"),
                         rs.getString("emailAddress"),
-                        rs.getString("password")),
+                        rs.getString("realPassWordForMe")),
                 getUsersByEmailParams);
     }
 
@@ -50,7 +50,7 @@ public class UserDao {
                         rs.getInt("userIdx"),
                         rs.getString("userName"),
                         rs.getString("emailAddress"),
-                        rs.getString("password")),
+                        rs.getString("realPassWordForMe")),
                 getUserParams);
     }
     
