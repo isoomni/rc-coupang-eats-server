@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.restaurant.model.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -102,7 +105,21 @@ public class RestaurantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
+    /**
+     * 카테고리 조회 API
+     * [GET] /categories
+     * @return BaseResponse<GetCategoryRes>
+     */
+    @ResponseBody
+    @GetMapping("/categories")// (GET) 127.0.0.1:9090/app/restaurants/categories
+    public BaseResponse<List<GetCategoryRes>> getCategory() {
+        try {
+            List<GetCategoryRes> getCategoryRes = restaurantProvider.getCategory();
+            return new BaseResponse<>(getCategoryRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
     /**
      * 로그 테스트 API

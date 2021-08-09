@@ -1,6 +1,7 @@
 package com.example.demo.src.restaurant;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.home.model.GetRestaurantCategoryListRes;
 import com.example.demo.src.restaurant.RestaurantDao;
 import com.example.demo.src.restaurant.model.GetRestaurantRes;
 import com.example.demo.src.restaurant.model.*;
@@ -174,10 +175,20 @@ public class RestaurantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-
-
-
+    /**
+     * 카테고리 조회 API
+     * [GET] /categories
+     * @return BaseResponse<GetCategoryRes>
+     */
+    public List<GetCategoryRes> getCategory() throws BaseException{
+        try{
+            List<GetCategoryRes> getCategoryRes = restaurantDao.getCategory();
+            return getCategoryRes;
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     /**

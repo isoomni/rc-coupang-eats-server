@@ -33,10 +33,10 @@ public class UserProvider {
         this.jwtService = jwtService;
     }
 
-    public List<GetUserRes> getUsers() throws BaseException{
+    public List<GetUsersRes> getUsers() throws BaseException{
         try{
-            List<GetUserRes> getUserRes = userDao.getUsers();
-            return getUserRes;
+            List<GetUsersRes> getUsersRes = userDao.getUsers();
+            return getUsersRes;
         }
         catch (Exception exception) {
             exception.printStackTrace();
@@ -44,9 +44,9 @@ public class UserProvider {
         }
     }
 
-    public List<GetUserRes> getUsersByEmail(String emailAddress) throws BaseException{
+    public List<GetUsersRes> getUsersByEmail(String emailAddress) throws BaseException{
         try{
-            List<GetUserRes> getUsersRes = userDao.getUsersByEmail(emailAddress);
+            List<GetUsersRes> getUsersRes = userDao.getUsersByEmail(emailAddress);
             return getUsersRes;
         }
         catch (Exception exception) {

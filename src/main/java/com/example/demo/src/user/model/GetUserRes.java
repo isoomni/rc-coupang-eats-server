@@ -1,6 +1,7 @@
 package com.example.demo.src.user.model;
 
 
+import com.example.demo.src.home.model.GetCouponBannerImgListRes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +10,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetUserRes {
-    private int userIdx;
-    private String userName;
-    private String emailAddress;
-    private String realPassWordForMe;
+    private GetUserRes1 getUserRes1;
+    private GetCouponBannerImgListRes getCouponBannerImgListRes;
 }

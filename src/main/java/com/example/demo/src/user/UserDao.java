@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 
+import com.example.demo.src.home.model.GetCouponBannerImgListRes;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,16 +14,18 @@ import java.util.List;
 public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
+    private GetUserRes1 getUserRes1;
+    private GetCouponBannerImgListRes getCouponBannerImgListRes;
 
     @Autowired
     public void setDataSource(DataSource dataSource){
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public List<GetUserRes> getUsers(){
+    public List<GetUsersRes> getUsers(){
         String getUsersQuery = "select * from RC_coupang_eats_d_Riley.User";
         return this.jdbcTemplate.query(getUsersQuery,
-                (rs,rowNum) -> new GetUserRes(
+                (rs,rowNum) -> new GetUsersRes(
                         rs.getInt("userIdx"),
                         rs.getString("userName"),
                         rs.getString("emailAddress"),
@@ -30,11 +33,11 @@ public class UserDao {
                 );
     }
 
-    public List<GetUserRes> getUsersByEmail(String emailAddress){
+    public List<GetUsersRes> getUsersByEmail(String emailAddress){
         String getUsersByEmailQuery = "select * from RC_coupang_eats_d_Riley.User where emailAddress =?";
         String getUsersByEmailParams = emailAddress;
         return this.jdbcTemplate.query(getUsersByEmailQuery,
-                (rs, rowNum) -> new GetUserRes(
+                (rs, rowNum) -> new GetUsersRes(
                         rs.getInt("userIdx"),
                         rs.getString("userName"),
                         rs.getString("emailAddress"),
@@ -43,15 +46,24 @@ public class UserDao {
     }
 
     public GetUserRes getUser(int userIdx){
-        String getUserQuery = "select * from RC_coupang_eats_d_Riley.User where userIdx = ?";
+        // 유저 정보
+        String getUserQuery = "select U.userName, replace(U.phoneNum, SUBSTRING(U.phoneNum,4,4), '-****-') as phoneNum\n" +
+                "from RC_coupang_eats_d_Riley.User U where U.userIdx = ?";
+        // 쿠팡잇츠 쿠폰 배너
+        String getUserQuery2 = "SELECT CBIU.couponBannerImgUrl FROM RC_coupang_eats_d_Riley.CouponBannerImgUrl CBIU";
+
         int getUserParams = userIdx;
-        return this.jdbcTemplate.queryForObject(getUserQuery,
-                (rs, rowNum) -> new GetUserRes(
-                        rs.getInt("userIdx"),
-                        rs.getString("userName"),
-                        rs.getString("emailAddress"),
-                        rs.getString("realPassWordForMe")),
-                getUserParams);
+        return new GetUserRes(
+                getUserRes1 = this.jdbcTemplate.queryForObject(getUserQuery,
+                        (rs, rowNum) -> new GetUserRes1(
+                                rs.getString("userName"),
+                                rs.getString("phoneNum")),
+                        getUserParams),
+                getCouponBannerImgListRes = this.jdbcTemplate.queryForObject(getUserQuery2,
+                        (rs, rowNum) -> new GetCouponBannerImgListRes(
+                                rs.getString("couponBannerImgUrl")
+                        )
+                ));
     }
     
 

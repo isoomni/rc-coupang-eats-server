@@ -46,14 +46,14 @@ public class UserController {
     //Query String
     @ResponseBody
     @GetMapping("") // (GET) 127.0.0.1:9000/app/users
-    public BaseResponse<List<GetUserRes>> getUsers(@RequestParam(required = false) String emailAddress) {
+    public BaseResponse<List<GetUsersRes>> getUsers(@RequestParam(required = false) String emailAddress) {
         try{
             if(emailAddress == null){
-                List<GetUserRes> getUsersRes = userProvider.getUsers();
+                List<GetUsersRes> getUsersRes = userProvider.getUsers();
                 return new BaseResponse<>(getUsersRes);
             }
             // Get Users
-            List<GetUserRes> getUsersRes = userProvider.getUsersByEmail(emailAddress);
+            List<GetUsersRes> getUsersRes = userProvider.getUsersByEmail(emailAddress);
             return new BaseResponse<>(getUsersRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -71,8 +71,15 @@ public class UserController {
     public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) {
         // Get Users
         try{
-            GetUserRes getUserRes = userProvider.getUser(userIdx);
-            return new BaseResponse<>(getUserRes);
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+            //같다면 유저네임 변경
+            GetUserRes getUsersRes = userProvider.getUser(userIdx);
+            return new BaseResponse<>(getUsersRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }

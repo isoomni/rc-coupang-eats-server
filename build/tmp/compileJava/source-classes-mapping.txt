@@ -1,15 +1,57 @@
-com/example/demo/src/restaurant/RestaurantDao.java
- com.example.demo.src.restaurant.RestaurantDao
 com/example/demo/src/restaurant/RestaurantService.java
  com.example.demo.src.restaurant.RestaurantService
-com/example/demo/src/home/HomeService.java
- com.example.demo.src.home.HomeService
-com/example/demo/src/user/model/PostUserReq.java
- com.example.demo.src.user.model.PostUserReq
 com/example/demo/config/Constant.java
  com.example.demo.config.Constant
+com/example/demo/src/order/model/GetOrderRes4.java
+ com.example.demo.src.order.model.GetOrderRes4
 com/example/demo/src/restaurant/model/GetMenuListRes.java
  com.example.demo.src.restaurant.model.GetMenuListRes
+com/example/demo/src/order/OrderDao.java
+ com.example.demo.src.order.OrderDao
+com/example/demo/utils/ValidationRegex.java
+ com.example.demo.utils.ValidationRegex
+com/example/demo/src/order/model/GetOrderRes3.java
+ com.example.demo.src.order.model.GetOrderRes3
+com/example/demo/config/BaseResponseStatus.java
+ com.example.demo.config.BaseResponseStatus
+com/example/demo/src/restaurant/RestaurantProvider.java
+ com.example.demo.src.restaurant.RestaurantProvider
+com/example/demo/src/order/model/GetOrderRes.java
+ com.example.demo.src.order.model.GetOrderRes
+com/example/demo/src/home/model/GetPopularFranchiseRes.java
+ com.example.demo.src.home.model.GetPopularFranchiseRes
+com/example/demo/src/restaurant/model/GetReviewRes1.java
+ com.example.demo.src.restaurant.model.GetReviewRes1
+com/example/demo/src/home/model/GetPromoBannerImgListRes.java
+ com.example.demo.src.home.model.GetPromoBannerImgListRes
+com/example/demo/config/secret/Secret.java
+ com.example.demo.config.secret.Secret
+com/example/demo/src/home/model/GetRestaurantCategoryListRes.java
+ com.example.demo.src.home.model.GetRestaurantCategoryListRes
+com/example/demo/src/user/model/PostUserRes.java
+ com.example.demo.src.user.model.PostUserRes
+com/example/demo/config/BaseResponse.java
+ com.example.demo.config.BaseResponse
+com/example/demo/src/home/model/GetNewRestaurantsListRes.java
+ com.example.demo.src.home.model.GetNewRestaurantsListRes
+com/example/demo/src/order/model/GetOrderRes2.java
+ com.example.demo.src.order.model.GetOrderRes2
+com/example/demo/src/user/UserService.java
+ com.example.demo.src.user.UserService
+com/example/demo/src/restaurant/model/GetRestaurantNameAndLikeRes.java
+ com.example.demo.src.restaurant.model.GetRestaurantNameAndLikeRes
+com/example/demo/config/BaseException.java
+ com.example.demo.config.BaseException
+com/example/demo/src/order/OrderService.java
+ com.example.demo.src.order.OrderService
+com/example/demo/src/restaurant/RestaurantDao.java
+ com.example.demo.src.restaurant.RestaurantDao
+com/example/demo/src/home/HomeService.java
+ com.example.demo.src.home.HomeService
+com/example/demo/src/order/model/GetOrderRes1.java
+ com.example.demo.src.order.model.GetOrderRes1
+com/example/demo/src/user/model/PostUserReq.java
+ com.example.demo.src.user.model.PostUserReq
 com/example/demo/src/home/HomeProvider.java
  com.example.demo.src.home.HomeProvider
 com/example/demo/src/home/model/GetHomeRes.java
@@ -18,66 +60,48 @@ com/example/demo/src/restaurant/model/GetReviewsRes.java
  com.example.demo.src.restaurant.model.GetReviewsRes
 com/example/demo/src/home/HomeDao.java
  com.example.demo.src.home.HomeDao
-com/example/demo/utils/ValidationRegex.java
- com.example.demo.utils.ValidationRegex
 com/example/demo/src/home/model/GetCouponBannerImgListRes.java
  com.example.demo.src.home.model.GetCouponBannerImgListRes
 com/example/demo/src/user/model/PostLoginRes.java
  com.example.demo.src.user.model.PostLoginRes
+com/example/demo/src/user/model/GetUsersRes.java
+ com.example.demo.src.user.model.GetUsersRes
 com/example/demo/src/user/UserDao.java
  com.example.demo.src.user.UserDao
 com/example/demo/utils/AES128.java
  com.example.demo.utils.AES128
-com/example/demo/config/BaseResponseStatus.java
- com.example.demo.config.BaseResponseStatus
 com/example/demo/src/user/model/PatchUserReq.java
  com.example.demo.src.user.model.PatchUserReq
-com/example/demo/src/restaurant/RestaurantProvider.java
- com.example.demo.src.restaurant.RestaurantProvider
 com/example/demo/src/WebSecurityConfig.java
  com.example.demo.src.WebSecurityConfig
+com/example/demo/src/order/OrderProvider.java
+ com.example.demo.src.order.OrderProvider
 com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
-com/example/demo/src/home/model/GetPopularFranchiseRes.java
- com.example.demo.src.home.model.GetPopularFranchiseRes
-com/example/demo/src/restaurant/model/GetReviewRes1.java
- com.example.demo.src.restaurant.model.GetReviewRes1
 com/example/demo/src/home/HomeController.java
  com.example.demo.src.home.HomeController
+com/example/demo/src/restaurant/model/GetCategoryRes.java
+ com.example.demo.src.restaurant.model.GetCategoryRes
 com/example/demo/src/user/model/PostLoginReq.java
  com.example.demo.src.user.model.PostLoginReq
-com/example/demo/src/home/model/GetPromoBannerImgListRes.java
- com.example.demo.src.home.model.GetPromoBannerImgListRes
 com/example/demo/src/home/model/GetFilteredRes.java
  com.example.demo.src.home.model.GetFilteredRes
-com/example/demo/config/secret/Secret.java
- com.example.demo.config.secret.Secret
-com/example/demo/src/home/model/GetRestaurantCategoryListRes.java
- com.example.demo.src.home.model.GetRestaurantCategoryListRes
+com/example/demo/src/user/model/GetUserRes1.java
+ com.example.demo.src.user.model.GetUserRes1
 com/example/demo/src/restaurant/model/GetMenuCategoryListRes.java
  com.example.demo.src.restaurant.model.GetMenuCategoryListRes
-com/example/demo/src/user/model/PostUserRes.java
- com.example.demo.src.user.model.PostUserRes
 com/example/demo/src/user/UserController.java
  com.example.demo.src.user.UserController
-com/example/demo/config/BaseResponse.java
- com.example.demo.config.BaseResponse
-com/example/demo/src/home/model/GetNewRestaurantsListRes.java
- com.example.demo.src.home.model.GetNewRestaurantsListRes
+com/example/demo/src/order/OrderController.java
+ com.example.demo.src.order.OrderController
 com/example/demo/src/user/model/User.java
  com.example.demo.src.user.model.User
-com/example/demo/src/user/UserService.java
- com.example.demo.src.user.UserService
 com/example/demo/src/restaurant/model/GetRestaurantMenuRes.java
  com.example.demo.src.restaurant.model.GetRestaurantMenuRes
 com/example/demo/src/restaurant/model/GetReviewRes2.java
  com.example.demo.src.restaurant.model.GetReviewRes2
 com/example/demo/src/user/model/GetUserRes.java
  com.example.demo.src.user.model.GetUserRes
-com/example/demo/src/restaurant/model/GetRestaurantNameAndLikeRes.java
- com.example.demo.src.restaurant.model.GetRestaurantNameAndLikeRes
-com/example/demo/config/BaseException.java
- com.example.demo.config.BaseException
 com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
 com/example/demo/src/restaurant/RestaurantController.java
