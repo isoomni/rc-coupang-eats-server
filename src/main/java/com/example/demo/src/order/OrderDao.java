@@ -103,4 +103,37 @@ public class OrderDao {
         );
     }
 
+    public int createOrder(PostOrderReq postOrderReq){
+        String Query1 = "insert into RC_coupang_eats_d_Riley.Cart (restaurantIdx, userIdx, paymentMethodIdx, requestedTermToOwner, requestedTermToDeliveryMan, disposableItemReceivingStatus) VALUES (?,?,?,?,?,?)";
+        Object[] createOrderParams = new Object[]{postOrderReq.getRestaurantIdx(), postOrderReq.getUserIdx(), postOrderReq.getPaymentMethodIdx(), postOrderReq.getRequestedTermToOwner(), postOrderReq.getRequestedTermToDeliveryMan(), postOrderReq.getDisposableItemReceivingStatus()};
+        this.jdbcTemplate.update(Query1, createOrderParams);
+
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
+    }
+
+    /**
+     * 카트 수정 API
+     * [PATCH] /orders/:userIdx/carts/:cartIdx
+     * @return BaseResponse<String>
+     */
+    public int modifyOrder(PatchOrderReq patchOrderReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.Cart set requestedTermToOwner = ?, requestedTermToDeliveryMan = ?, disposableItemReceivingStatus = ? where cartIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchOrderReq.getRequestedTermToOwner(), patchOrderReq.getRequestedTermToDeliveryMan(), patchOrderReq.getDisposableItemReceivingStatus(), patchOrderReq.getCartIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
+    }
+
+    /**
+     * 카트 삭제 API
+     * [PATCH] /orders/:userIdx/carts/:cartIdx/status
+     * @return BaseResponse<String>
+     */
+    public int modifyOrderStatus(PatchOrderStatusReq patchOrderStatusReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.Cart set status = ? where cartIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchOrderStatusReq.getStatus(), patchOrderStatusReq.getCartIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
+    }
+
 }

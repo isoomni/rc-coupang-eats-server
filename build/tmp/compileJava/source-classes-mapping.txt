@@ -16,6 +16,8 @@ com/example/demo/config/BaseResponseStatus.java
  com.example.demo.config.BaseResponseStatus
 com/example/demo/src/restaurant/RestaurantProvider.java
  com.example.demo.src.restaurant.RestaurantProvider
+com/example/demo/src/order/model/PostOrderRes.java
+ com.example.demo.src.order.model.PostOrderRes
 com/example/demo/src/order/model/GetOrderRes.java
  com.example.demo.src.order.model.GetOrderRes
 com/example/demo/src/home/model/GetPopularFranchiseRes.java
@@ -24,6 +26,8 @@ com/example/demo/src/restaurant/model/GetReviewRes1.java
  com.example.demo.src.restaurant.model.GetReviewRes1
 com/example/demo/src/home/model/GetPromoBannerImgListRes.java
  com.example.demo.src.home.model.GetPromoBannerImgListRes
+com/example/demo/src/order/model/PatchOrderStatusReq.java
+ com.example.demo.src.order.model.PatchOrderStatusReq
 com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
 com/example/demo/src/home/model/GetRestaurantCategoryListRes.java
@@ -36,6 +40,8 @@ com/example/demo/src/home/model/GetNewRestaurantsListRes.java
  com.example.demo.src.home.model.GetNewRestaurantsListRes
 com/example/demo/src/order/model/GetOrderRes2.java
  com.example.demo.src.order.model.GetOrderRes2
+com/example/demo/src/order/model/Order.java
+ com.example.demo.src.order.model.Order
 com/example/demo/src/user/UserService.java
  com.example.demo.src.user.UserService
 com/example/demo/src/restaurant/model/GetRestaurantNameAndLikeRes.java
@@ -72,6 +78,8 @@ com/example/demo/utils/AES128.java
  com.example.demo.utils.AES128
 com/example/demo/src/user/model/PatchUserReq.java
  com.example.demo.src.user.model.PatchUserReq
+com/example/demo/src/order/model/PatchOrderReq.java
+ com.example.demo.src.order.model.PatchOrderReq
 com/example/demo/src/WebSecurityConfig.java
  com.example.demo.src.WebSecurityConfig
 com/example/demo/src/order/OrderProvider.java
@@ -96,6 +104,8 @@ com/example/demo/src/order/OrderController.java
  com.example.demo.src.order.OrderController
 com/example/demo/src/user/model/User.java
  com.example.demo.src.user.model.User
+com/example/demo/src/order/model/PostOrderReq.java
+ com.example.demo.src.order.model.PostOrderReq
 com/example/demo/src/restaurant/model/GetRestaurantMenuRes.java
  com.example.demo.src.restaurant.model.GetRestaurantMenuRes
 com/example/demo/src/restaurant/model/GetReviewRes2.java

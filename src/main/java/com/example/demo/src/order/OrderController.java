@@ -54,6 +54,86 @@ public class OrderController {
     }
 
     /**
+     * 카트 등록 API
+     * [POST] /orders/:userIdx/carts
+     * @return BaseResponse<PostOrderRes>
+     */
+    @ResponseBody
+    @PostMapping("/{userIdx}/carts") // (GET) 127.0.0.1:9090/app/orders/:userIdx/carts
+    public BaseResponse<PostOrderRes> createOrder(@PathVariable("userIdx") int userIdx, @RequestBody PostOrderReq postOrderReq){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PostOrderRes postOrderRes = orderService.createOrder(postOrderReq);
+            return new BaseResponse<>(postOrderRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 카트 수정 API
+     * [PATCH] /orders/:userIdx/carts/:cartIdx
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/carts/{cartIdx}") // (PATCH) 127.0.0.1:9000/app/orders/:userIdx/carts/:cartIdx
+    public BaseResponse<String> modifyOrder(@PathVariable("userIdx") int userIdx, @PathVariable("cartIdx") int cartIdx, @RequestBody Order order){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchOrderReq patchOrderReq = new PatchOrderReq(cartIdx, order.getRequestedTermToOwner(), order.getRequestedTermToDeliveryMan(), order.getDisposableItemReceivingStatus());
+            orderService.modifyOrder(patchOrderReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    /**
+     * 카트 삭제 API
+     * [PATCH] /orders/:userIdx/carts/:cartIdx/status
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/carts/{cartIdx}/status") // (PATCH) 127.0.0.1:9000/app/orders/:userIdx/carts/:cartIdx/status
+    public BaseResponse<String> modifyOrderStatus(@PathVariable("userIdx") int userIdx, @PathVariable("cartIdx") int cartIdx, @RequestBody Order order){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchOrderStatusReq patchOrderStatusReq = new PatchOrderStatusReq(cartIdx, order.getStatus());
+            orderService.modifyOrderStatus(patchOrderStatusReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+
+    /**
      * 로그 테스트 API
      * [GET] /test/log
      * @return String

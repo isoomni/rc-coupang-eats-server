@@ -27,6 +27,54 @@ public class OrderService {
         this.orderProvider = orderProvider;
     }
 
+    /**
+     * 카트 등록 API
+     * [POST] /orders/:userIdx/carts
+     * @return BaseResponse<GetOrderRes>
+     */
+    public PostOrderRes createOrder(PostOrderReq postOrderReq) throws BaseException { // 숙소정보를 생성하려고 하는데
+
+        try {
+            int cartIdx = orderDao.createOrder(postOrderReq);
+            return new PostOrderRes(cartIdx);
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+    /**
+     * 카트 수정 API
+     * [PATCH] /orders/:userIdx/carts/:cartIdx
+     * @return BaseResponse<String>
+     */
+    public void modifyOrder(PatchOrderReq patchOrderReq) throws BaseException {
+        try{
+            int result = orderDao.modifyOrder(patchOrderReq);
+            if (result == 0){
+                throw new BaseException(MODIFY_FAIL_ORDER);
+            }
+        } catch(Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    /**
+     * 카트 삭제 API
+     * [PATCH] /orders/:userIdx/carts/:cartIdx/status
+     * @return BaseResponse<String>
+     */
+    public void modifyOrderStatus(PatchOrderStatusReq patchOrderStatusReq) throws BaseException {
+        try{
+            int result = orderDao.modifyOrderStatus(patchOrderStatusReq);
+            if (result == 0){
+                throw new BaseException(MODIFY_FAIL_ORDER);
+            }
+        } catch(Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
 
