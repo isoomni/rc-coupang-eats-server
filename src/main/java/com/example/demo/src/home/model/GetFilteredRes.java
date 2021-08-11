@@ -18,7 +18,7 @@ public class GetFilteredRes {
     private String deliveryTime;
     private Double starAvg;
     private String reviewCount;
-    private Double distance;
+    private String realDistance;
     private String deliveryFee;
     private String couponName;
 }

@@ -1,5 +1,6 @@
 package com.example.demo.src.home;
 
+import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -7,6 +8,8 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.home.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 
 
 @RestController
@@ -18,10 +21,13 @@ public class HomeController {
     private final HomeProvider homeProvider;
     @Autowired
     private final HomeService homeService;
+    @Autowired
+    private final JwtService jwtService;
 
-    public HomeController(HomeProvider homeProvider, HomeService homeService){
+    public HomeController(HomeProvider homeProvider, HomeService homeService, JwtService jwtService){
         this.homeProvider = homeProvider;
         this.homeService = homeService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -30,33 +36,40 @@ public class HomeController {
      * @return BaseResponse<GetHomeRes>
      */
     @ResponseBody
-    @GetMapping("") // (GET) 127.0.0.1:9000/app/homes
-    public BaseResponse<GetHomeRes> getHome(@RequestParam(required = false) String chitaDeliveryStatus, @RequestParam(required = false) String couponStatus, @RequestParam(required = false) Double minDeliveryAmount){
+    @GetMapping("/{userIdx}/{deliveryAddressIdx}") // (GET) 127.0.0.1:9000/app/homes/:userIdx/:deliveryAddressIdx
+    public BaseResponse<GetHomeRes> getHome(@PathVariable("userIdx") int userIdx, @PathVariable("deliveryAddressIdx") int deliveryAddressIdx,@RequestParam(required = false) String chitaDeliveryStatus, @RequestParam(required = false) String couponStatus, @RequestParam(required = false) Double minDeliveryAmount){
         // Get Users
         try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+            //같다면 유저네임 변경
             if(chitaDeliveryStatus == null && couponStatus == null && minDeliveryAmount == null){ // 치타 배달에 대한 값 혹은 쿠폰에 대한 값이 쿼리 스트링으로 전달 받지 못하는 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHome(); //전체 식당를 조회하고
+                GetHomeRes getHomeRes = homeProvider.getHome(deliveryAddressIdx); //전체 식당를 조회하고
                 return new BaseResponse<>(getHomeRes);
             }else if (chitaDeliveryStatus != null && couponStatus == null && minDeliveryAmount == null){  // 치타 배달 값만 전달된 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHomeByChitaFilter(chitaDeliveryStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                GetHomeRes getHomeRes = homeProvider.getHomeByChitaFilter(deliveryAddressIdx, chitaDeliveryStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
             }else if (chitaDeliveryStatus == null && couponStatus != null && minDeliveryAmount == null) { // 쿠폰 값만 전달된 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHomeByCouponFilter(couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                GetHomeRes getHomeRes = homeProvider.getHomeByCouponFilter(deliveryAddressIdx, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
             }else if (chitaDeliveryStatus == null && couponStatus == null && minDeliveryAmount != null) { // 최소 주문 값만 전달된 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHomeByMinDeliveryAmountFilter(minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                GetHomeRes getHomeRes = homeProvider.getHomeByMinDeliveryAmountFilter(deliveryAddressIdx, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
             }else if (chitaDeliveryStatus != null && couponStatus == null && minDeliveryAmount != null) { // 치타 배달 값, 최소 주문 값만 전달된 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHomeByChitaAndMinFilter(chitaDeliveryStatus, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                GetHomeRes getHomeRes = homeProvider.getHomeByChitaAndMinFilter(deliveryAddressIdx,chitaDeliveryStatus, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
             }else if (chitaDeliveryStatus != null && couponStatus != null && minDeliveryAmount == null) { // 치타 배달 값, 쿠폰 값만 전달된 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHomeByChitaAndCouponFilter(chitaDeliveryStatus, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                GetHomeRes getHomeRes = homeProvider.getHomeByChitaAndCouponFilter(deliveryAddressIdx,chitaDeliveryStatus, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
             }else if (chitaDeliveryStatus == null && couponStatus != null && minDeliveryAmount != null) { // 쿠폰 값, 최소 주문 값만 전달된 경우에는
-                GetHomeRes getHomeRes = homeProvider.getHomeByCouponAndMinFilter(minDeliveryAmount, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+                GetHomeRes getHomeRes = homeProvider.getHomeByCouponAndMinFilter(deliveryAddressIdx, minDeliveryAmount, couponStatus); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
                 return new BaseResponse<>(getHomeRes);
 
-            } GetHomeRes getHomeRes = homeProvider.getHomeByFilter(chitaDeliveryStatus, couponStatus, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
+            } GetHomeRes getHomeRes = homeProvider.getHomeByFilter(deliveryAddressIdx, chitaDeliveryStatus, couponStatus, minDeliveryAmount); // city 값이 있는 경우에는 email 로 필터링 된 숙소를 조회하게 했다.
             return new BaseResponse<>(getHomeRes);
 
         }  catch(BaseException exception){

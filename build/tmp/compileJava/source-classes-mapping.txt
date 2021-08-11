@@ -2,6 +2,8 @@ com/example/demo/src/restaurant/RestaurantService.java
  com.example.demo.src.restaurant.RestaurantService
 com/example/demo/config/Constant.java
  com.example.demo.config.Constant
+com/example/demo/src/favorite/model/GetFavoriteRes.java
+ com.example.demo.src.favorite.model.GetFavoriteRes
 com/example/demo/src/order/model/GetOrderRes4.java
  com.example.demo.src.order.model.GetOrderRes4
 com/example/demo/src/restaurant/model/GetMenuListRes.java
@@ -24,6 +26,8 @@ com/example/demo/src/home/model/GetPopularFranchiseRes.java
  com.example.demo.src.home.model.GetPopularFranchiseRes
 com/example/demo/src/restaurant/model/GetReviewRes1.java
  com.example.demo.src.restaurant.model.GetReviewRes1
+com/example/demo/src/favorite/FavoriteProvider.java
+ com.example.demo.src.favorite.FavoriteProvider
 com/example/demo/src/home/model/GetPromoBannerImgListRes.java
  com.example.demo.src.home.model.GetPromoBannerImgListRes
 com/example/demo/src/order/model/PatchOrderStatusReq.java
@@ -42,6 +46,8 @@ com/example/demo/src/order/model/GetOrderRes2.java
  com.example.demo.src.order.model.GetOrderRes2
 com/example/demo/src/order/model/Order.java
  com.example.demo.src.order.model.Order
+com/example/demo/src/favorite/FavoriteService.java
+ com.example.demo.src.favorite.FavoriteService
 com/example/demo/src/user/UserService.java
  com.example.demo.src.user.UserService
 com/example/demo/src/restaurant/model/GetRestaurantNameAndLikeRes.java
@@ -62,6 +68,8 @@ com/example/demo/src/home/HomeProvider.java
  com.example.demo.src.home.HomeProvider
 com/example/demo/src/home/model/GetHomeRes.java
  com.example.demo.src.home.model.GetHomeRes
+com/example/demo/src/favorite/FavoriteController.java
+ com.example.demo.src.favorite.FavoriteController
 com/example/demo/src/restaurant/model/GetReviewsRes.java
  com.example.demo.src.restaurant.model.GetReviewsRes
 com/example/demo/src/home/HomeDao.java
@@ -86,6 +94,8 @@ com/example/demo/src/order/OrderProvider.java
  com.example.demo.src.order.OrderProvider
 com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
+com/example/demo/src/favorite/FavoriteDao.java
+ com.example.demo.src.favorite.FavoriteDao
 com/example/demo/src/home/HomeController.java
  com.example.demo.src.home.HomeController
 com/example/demo/src/restaurant/model/GetCategoryRes.java

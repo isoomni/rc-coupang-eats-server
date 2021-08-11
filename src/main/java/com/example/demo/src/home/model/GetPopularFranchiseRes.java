@@ -14,6 +14,6 @@ public class GetPopularFranchiseRes {
     private String restaurantName;
     private Double starAvg;
     private String reviewCount;
-    private Double distance;
+    private String realDistance;
     private String deliveryFee;
 }

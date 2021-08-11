@@ -28,9 +28,9 @@ public class HomeProvider {
     }
 
     // 여기서부터 본문
-    public GetHomeRes getHome() throws BaseException{
+    public GetHomeRes getHome(int deliveryAddressIdx) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHome();
+            GetHomeRes getHomeRes = homeDao.getHome(deliveryAddressIdx);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -38,9 +38,9 @@ public class HomeProvider {
         }
     }
     // 치타
-    public GetHomeRes getHomeByChitaFilter(String chitaDeliveryStatus) throws BaseException{
+    public GetHomeRes getHomeByChitaFilter(int deliveryAddressIdx, String chitaDeliveryStatus) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByChitaFilter(chitaDeliveryStatus);
+            GetHomeRes getHomeRes = homeDao.getHomeByChitaFilter(deliveryAddressIdx, chitaDeliveryStatus);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -48,9 +48,9 @@ public class HomeProvider {
         }
     }
     //쿠폰
-    public GetHomeRes getHomeByCouponFilter(String couponStatus) throws BaseException{
+    public GetHomeRes getHomeByCouponFilter(int deliveryAddressIdx, String couponStatus) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByCouponFilter(couponStatus);
+            GetHomeRes getHomeRes = homeDao.getHomeByCouponFilter(deliveryAddressIdx, couponStatus);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -58,9 +58,9 @@ public class HomeProvider {
         }
     }
     // 최소 주문액
-    public GetHomeRes getHomeByMinDeliveryAmountFilter(Double minDeliveryAmount) throws BaseException{
+    public GetHomeRes getHomeByMinDeliveryAmountFilter(int deliveryAddressIdx, Double minDeliveryAmount) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByMinDeliveryAmountFilter(minDeliveryAmount);
+            GetHomeRes getHomeRes = homeDao.getHomeByMinDeliveryAmountFilter(deliveryAddressIdx, minDeliveryAmount);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -68,9 +68,9 @@ public class HomeProvider {
         }
     }
     // 치타 배달 & 최소 주문
-    public GetHomeRes getHomeByChitaAndMinFilter(String chitaDeliveryStatus, Double minDeliveryAmount) throws BaseException{
+    public GetHomeRes getHomeByChitaAndMinFilter(int deliveryAddressIdx, String chitaDeliveryStatus, Double minDeliveryAmount) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByChitaAndMinFilter(chitaDeliveryStatus, minDeliveryAmount);
+            GetHomeRes getHomeRes = homeDao.getHomeByChitaAndMinFilter(deliveryAddressIdx, chitaDeliveryStatus, minDeliveryAmount);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -78,9 +78,9 @@ public class HomeProvider {
         }
     }
     // 치타 배달 & 쿠폰
-    public GetHomeRes getHomeByChitaAndCouponFilter(String chitaDeliveryStatus, String couponStatus) throws BaseException{
+    public GetHomeRes getHomeByChitaAndCouponFilter(int deliveryAddressIdx, String chitaDeliveryStatus, String couponStatus) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByChitaAndCouponFilter(chitaDeliveryStatus, couponStatus);
+            GetHomeRes getHomeRes = homeDao.getHomeByChitaAndCouponFilter(deliveryAddressIdx, chitaDeliveryStatus, couponStatus);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -88,9 +88,9 @@ public class HomeProvider {
         }
     }
     // 쿠폰 & 최소 주문
-    public GetHomeRes getHomeByCouponAndMinFilter(Double minDeliveryAmount, String couponStatus) throws BaseException{
+    public GetHomeRes getHomeByCouponAndMinFilter(int deliveryAddressIdx, Double minDeliveryAmount, String couponStatus) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByCouponAndMinFilter(minDeliveryAmount, couponStatus);
+            GetHomeRes getHomeRes = homeDao.getHomeByCouponAndMinFilter(deliveryAddressIdx, minDeliveryAmount, couponStatus);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -99,9 +99,9 @@ public class HomeProvider {
     }
 
     // 모두 다 있는 필터
-    public GetHomeRes getHomeByFilter(String chitaDeliveryStatus, String couponStatus, Double minDeliveryAmount) throws BaseException{
+    public GetHomeRes getHomeByFilter(int deliveryAddressIdx, String chitaDeliveryStatus, String couponStatus, Double minDeliveryAmount) throws BaseException{
         try{
-            GetHomeRes getHomeRes = homeDao.getHomeByFilter(chitaDeliveryStatus, couponStatus, minDeliveryAmount);
+            GetHomeRes getHomeRes = homeDao.getHomeByFilter(deliveryAddressIdx, chitaDeliveryStatus, couponStatus, minDeliveryAmount);
             return getHomeRes;
         } catch (Exception exception) {
             exception.printStackTrace();

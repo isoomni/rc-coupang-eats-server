@@ -34,9 +34,9 @@ public class RestaurantProvider {
      * [GET] /restaurants/:restaurantCategoryIdx
      * @return BaseResponse<GetRestaurantRes>
      */
-    public GetRestaurantRes getRestaurant(int restaurantCategoryIdx) throws BaseException{
+    public GetRestaurantRes getRestaurant(int restaurantCategoryIdx, int deliveryAddressIdx) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurant(restaurantCategoryIdx);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurant(restaurantCategoryIdx, deliveryAddressIdx);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -44,9 +44,9 @@ public class RestaurantProvider {
         }
     }
     // 치타
-    public GetRestaurantRes getRestaurantByChitaFilter(int restaurantCategoryIdx, String chitaDeliveryStatus) throws BaseException{
+    public GetRestaurantRes getRestaurantByChitaFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByChitaFilter(restaurantCategoryIdx, chitaDeliveryStatus);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByChitaFilter(restaurantCategoryIdx, deliveryAddressIdx, chitaDeliveryStatus);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -54,9 +54,9 @@ public class RestaurantProvider {
         }
     }
     //쿠폰
-    public GetRestaurantRes getRestaurantByCouponFilter(int restaurantCategoryIdx, String couponStatus) throws BaseException{
+    public GetRestaurantRes getRestaurantByCouponFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String couponStatus) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByCouponFilter(restaurantCategoryIdx, couponStatus);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByCouponFilter(restaurantCategoryIdx, deliveryAddressIdx, couponStatus);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -64,9 +64,9 @@ public class RestaurantProvider {
         }
     }
     // 최소 주문액
-    public GetRestaurantRes getRestaurantByMinDeliveryAmountFilter(int restaurantCategoryIdx, Double minDeliveryAmount) throws BaseException{
+    public GetRestaurantRes getRestaurantByMinDeliveryAmountFilter(int restaurantCategoryIdx, int deliveryAddressIdx, Double minDeliveryAmount) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByMinDeliveryAmountFilter(restaurantCategoryIdx, minDeliveryAmount);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByMinDeliveryAmountFilter(restaurantCategoryIdx, deliveryAddressIdx, minDeliveryAmount);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -74,9 +74,9 @@ public class RestaurantProvider {
         }
     }
     // 치타 배달 & 최소 주문
-    public GetRestaurantRes getRestaurantByChitaAndMinFilter(int restaurantCategoryIdx, String chitaDeliveryStatus, Double minDeliveryAmount) throws BaseException{
+    public GetRestaurantRes getRestaurantByChitaAndMinFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus, Double minDeliveryAmount) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByChitaAndMinFilter(restaurantCategoryIdx, chitaDeliveryStatus, minDeliveryAmount);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByChitaAndMinFilter(restaurantCategoryIdx, deliveryAddressIdx, chitaDeliveryStatus, minDeliveryAmount);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -84,9 +84,9 @@ public class RestaurantProvider {
         }
     }
     // 치타 배달 & 쿠폰
-    public GetRestaurantRes getRestaurantByChitaAndCouponFilter(int restaurantCategoryIdx, String chitaDeliveryStatus, String couponStatus) throws BaseException{
+    public GetRestaurantRes getRestaurantByChitaAndCouponFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus, String couponStatus) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByChitaAndCouponFilter(restaurantCategoryIdx, chitaDeliveryStatus, couponStatus);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByChitaAndCouponFilter(restaurantCategoryIdx, deliveryAddressIdx, chitaDeliveryStatus, couponStatus);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -94,9 +94,9 @@ public class RestaurantProvider {
         }
     }
     // 쿠폰 & 최소 주문
-    public GetRestaurantRes getRestaurantByCouponAndMinFilter(int restaurantCategoryIdx, Double minDeliveryAmount, String couponStatus) throws BaseException{
+    public GetRestaurantRes getRestaurantByCouponAndMinFilter(int restaurantCategoryIdx, int deliveryAddressIdx, Double minDeliveryAmount, String couponStatus) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByCouponAndMinFilter(restaurantCategoryIdx, minDeliveryAmount, couponStatus);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByCouponAndMinFilter(restaurantCategoryIdx, deliveryAddressIdx, minDeliveryAmount, couponStatus);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -105,9 +105,9 @@ public class RestaurantProvider {
     }
 
     // 모두 다 있는 필터
-    public GetRestaurantRes getRestaurantByFilter(int restaurantCategoryIdx, String chitaDeliveryStatus, String couponStatus, Double minDeliveryAmount) throws BaseException{
+    public GetRestaurantRes getRestaurantByFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus, String couponStatus, Double minDeliveryAmount) throws BaseException{
         try{
-            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByFilter(restaurantCategoryIdx, chitaDeliveryStatus, couponStatus, minDeliveryAmount);
+            GetRestaurantRes getRestaurantRes = restaurantDao.getRestaurantByFilter(restaurantCategoryIdx, deliveryAddressIdx, chitaDeliveryStatus, couponStatus, minDeliveryAmount);
             return getRestaurantRes;
         } catch (Exception exception) {
             exception.printStackTrace();

@@ -36,22 +36,40 @@ public class RestaurantDao {
      * [GET] /restaurants/:restaurantCategoryIdx
      * @return BaseResponse<GetRestaurantRes>
      */
-    public GetRestaurantRes getRestaurant(int restaurantCategoryIdx){
+    public GetRestaurantRes getRestaurant(int restaurantCategoryIdx, int deliveryAddressIdx){
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
         // 카테고리 리스트
         String getHomeQuery1 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery2 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
-                "where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery2 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery3 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
         return new GetRestaurantRes(
                 getCategoryNameRes = this.jdbcTemplate.queryForObject(getHomeQuery0,
@@ -70,9 +88,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ),getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery3,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -83,27 +101,48 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ),getRestaurantParams1
+                        ), getRestaurantParams1, getHomeByFilterParams4
                 ));
     }
     // 치타
-    public GetRestaurantRes getRestaurantByChitaFilter(int restaurantCategoryIdx, String chitaDeliveryStatus){
+    public GetRestaurantRes getRestaurantByChitaFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus){
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
+
         String getHomeByFilterParams1 = chitaDeliveryStatus;
         int getRestaurantParams1 = restaurantCategoryIdx;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
         return new GetRestaurantRes(
                 getCategoryNameRes = this.jdbcTemplate.queryForObject(getHomeQuery0,
@@ -121,9 +160,10 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ),getRestaurantParams1),
+                        ),getRestaurantParams1, getHomeByFilterParams4),
+
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -134,29 +174,49 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ),getRestaurantParams1, getHomeByFilterParams1
+                        ),getRestaurantParams1, getHomeByFilterParams1, getHomeByFilterParams4
                 ));
     }
 
     // 쿠폰
-    public GetRestaurantRes getRestaurantByCouponFilter(int restaurantCategoryIdx, String couponStatus){
+    public GetRestaurantRes getRestaurantByCouponFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String couponStatus){
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.couponStatus = ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.couponStatus = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
         String getHomeByFilterParams2 = couponStatus;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
 
 
@@ -177,9 +237,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ), getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -190,28 +250,48 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ), getRestaurantParams1,getHomeByFilterParams2
+                        ), getRestaurantParams1,getHomeByFilterParams2, getHomeByFilterParams4
                 ));
     }
     // 최소 주문
-    public GetRestaurantRes getRestaurantByMinDeliveryAmountFilter(int restaurantCategoryIdx, Double minDeliveryAmount){
+    public GetRestaurantRes getRestaurantByMinDeliveryAmountFilter(int restaurantCategoryIdx, int deliveryAddressIdx, Double minDeliveryAmount){
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.minDeliveryAmount <= ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.minDeliveryAmount <= ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
         Double getHomeByFilterParams2 = minDeliveryAmount;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
 
         return new GetRestaurantRes(
@@ -231,9 +311,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ), getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -244,30 +324,50 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ), getRestaurantParams1,getHomeByFilterParams2
+                        ), getRestaurantParams1, getHomeByFilterParams2, getHomeByFilterParams4
                 ));
     }
 
     // 치타 배달 & 최소 주문
-    public GetRestaurantRes getRestaurantByChitaAndMinFilter(int restaurantCategoryIdx, String chitaDeliveryStatus, Double minDeliveryAmount){
+    public GetRestaurantRes getRestaurantByChitaAndMinFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus, Double minDeliveryAmount){
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and R.minDeliveryAmount <= ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and R.minDeliveryAmount <= ?  and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
         String getHomeByFilterParams1 = chitaDeliveryStatus;
         Double getHomeByFilterParams2 = minDeliveryAmount;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
 
         return new GetRestaurantRes(
@@ -287,9 +387,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ), getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -300,15 +400,15 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2
+                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2, getHomeByFilterParams4
                 ));
     }
 
     // 치타 배달 & 쿠폰
-    public GetRestaurantRes getRestaurantByChitaAndCouponFilter(int restaurantCategoryIdx, String chitaDeliveryStatus, String couponStatus){
+    public GetRestaurantRes getRestaurantByChitaAndCouponFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus, String couponStatus){
 
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
@@ -316,15 +416,35 @@ public class RestaurantDao {
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and R.couponStatus = ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and R.couponStatus = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
         String getHomeByFilterParams1 = chitaDeliveryStatus;
         String getHomeByFilterParams2 = couponStatus;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
 
         return new GetRestaurantRes(
@@ -344,9 +464,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ), getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -357,29 +477,49 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2
+                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2, getHomeByFilterParams4
                 ));
     }
     // 쿠폰 & 최소 주문
-    public GetRestaurantRes getRestaurantByCouponAndMinFilter(int restaurantCategoryIdx, Double minDeliveryAmount, String couponStatus){
+    public GetRestaurantRes getRestaurantByCouponAndMinFilter(int restaurantCategoryIdx, int deliveryAddressIdx, Double minDeliveryAmount, String couponStatus){
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
         // 카테고리 리스트
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.minDeliveryAmount <= ? and R.couponStatus = ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.minDeliveryAmount <= ? and R.couponStatus = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
         Double getHomeByFilterParams1 = minDeliveryAmount;
         String getHomeByFilterParams2 = couponStatus;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
 
         return new GetRestaurantRes(
@@ -399,9 +539,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee")
-                        ), getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -412,13 +552,13 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("realDistance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2
+                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2, getHomeByFilterParams4
                 ));
     }
-    public GetRestaurantRes getRestaurantByFilter(int restaurantCategoryIdx, String chitaDeliveryStatus, String couponStatus, Double minDeliveryAmount){
+    public GetRestaurantRes getRestaurantByFilter(int restaurantCategoryIdx, int deliveryAddressIdx, String chitaDeliveryStatus, String couponStatus, Double minDeliveryAmount){
 
         // 카테고리 이름
         String getHomeQuery0 = "SELECT RC.restaurantCategoryName FROM RC_coupang_eats_d_Riley.RestaurantCategory RC where RC.restaurantCategoryIdx = ?";
@@ -426,16 +566,36 @@ public class RestaurantDao {
         String getHomeQuery2 = "SELECT RC.restaurantCategoryName, RC.restaurantCategoryImgUrl FROM RC_coupang_eats_d_Riley.RestaurantCategory RC";
 
         // 새로 들어왔어요
-        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,COUNT(RV.reviewIdx) as reviewCount,R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? GROUP BY RV.restaurantIdx";
+        String getHomeQuery5 = "SELECT R.restaurantProfileUrl,R.restaurantName, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount,\n" +
+                "       concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,\n" +
+                "       if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "                where R.createdAt >= date_add(now(), interval -7 day) and R.restaurantCategoryIdx = ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY realDistance;";
 
         // 골라먹는 맛집
-        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus, CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg, COUNT(RV.reviewIdx) as reviewCount, R.distance, if(R.deliveryFee=0, '무료배달', R.deliveryFee) as deliveryFee, C.couponName\n" +
-                "FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx WHERE R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and R.couponStatus = ? and R.minDeliveryAmount <= ? GROUP BY RV.restaurantIdx ORDER BY starAvg;";
+        String getHomeQuery6 = "SELECT R.restaurantProfileUrl, R.subProfileImgOne, R.subProfileImgTwo, R.restaurantName, R.chitaDeliveryStatus,\n" +
+                "                CONCAT(R.deliveryTime,'-',(R.deliveryTime+10),'분') as deliveryTime, round(SUM(RV.reviewStar)/COUNT(RV.reviewIdx),1) as starAvg,\n" +
+                "                COUNT(RV.reviewIdx) as reviewCount, concat(round(6371*acos(cos(radians(DA.userLatitude))*cos(radians(R.resLatitude))*cos(radians(R.resLongtitude)\n" +
+                "    -radians(R.resLongtitude))+sin(radians(DA.userLatitude))*sin(radians(R.resLatitude))), 1), 'km') AS realDistance,  if(R.deliveryFee=0, '무료배달', concat(format(R.deliveryFee, 0), '원')) as deliveryFee, C.couponName\n" +
+                "                FROM RC_coupang_eats_d_Riley.Review RV LEFT JOIN RC_coupang_eats_d_Riley.Restaurant R ON RV.restaurantIdx =R.restaurantIdx\n" +
+                "                LEFT JOIN RC_coupang_eats_d_Riley.Coupon C on R.restaurantIdx = C.restaurantIdx,\n" +
+                "                     RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "where R.restaurantCategoryIdx = ? and R.chitaDeliveryStatus = ? and R.couponStatus = ? and R.minDeliveryAmount <= ? and DA.deliveryAddressIdx = ?\n" +
+                "GROUP BY RV.restaurantIdx\n" +
+                "HAVING realDistance <= 10\n" +
+                "ORDER BY starAvg;";
 
         int getRestaurantParams1 = restaurantCategoryIdx;
         String getHomeByFilterParams1 = chitaDeliveryStatus;
         String getHomeByFilterParams2 = couponStatus;
         Double getHomeByFilterParams3 = minDeliveryAmount;
+        int getHomeByFilterParams4 = deliveryAddressIdx;
 
         return new GetRestaurantRes(
                 getCategoryNameRes = this.jdbcTemplate.queryForObject(getHomeQuery0,
@@ -454,9 +614,9 @@ public class RestaurantDao {
                                 rs.getString("restaurantName"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("distance"),
                                 rs.getString("deliveryFee")
-                        ), getRestaurantParams1),
+                        ), getRestaurantParams1, getHomeByFilterParams4),
                 getFilteredRes = this.jdbcTemplate.query(getHomeQuery6,
                         (rs, rowNum) -> new GetFilteredRes(
                                 rs.getString("restaurantProfileUrl"),
@@ -467,10 +627,10 @@ public class RestaurantDao {
                                 rs.getString("deliveryTime"),
                                 rs.getDouble("starAvg"),
                                 rs.getString("reviewCount"),
-                                rs.getDouble("distance"),
+                                rs.getString("distance"),
                                 rs.getString("deliveryFee"),
                                 rs.getString("couponName")
-                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2, getHomeByFilterParams3
+                        ), getRestaurantParams1,getHomeByFilterParams1, getHomeByFilterParams2, getHomeByFilterParams3, getHomeByFilterParams4
                 ));
     }
 
