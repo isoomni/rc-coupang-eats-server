@@ -32,7 +32,7 @@ public class KakaoAPI {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=8a066f0af57f4f05574989407104a155");
-            sb.append("&redirect_url=http://localhost:9090/login");
+            sb.append("&redirect_url=https://product.riley1.site/app/kakao/login");
             sb.append("&code="+code);
 
             bw.write(sb.toString());
