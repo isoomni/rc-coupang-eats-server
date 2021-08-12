@@ -154,9 +154,6 @@ public class UserController {
                 return new BaseResponse<>(POST_USERS_PASSWORD_SAME_WITH_EMAIL);
             }
 
-            if(postLoginReq.getStatus().equals('N')){
-                return new BaseResponse<>(POST_USERS_WITHDRAWAL);  // 탈퇴한 유저입니다.
-            }
             //이메일 정규표현
             if(!isRegexEmail(postLoginReq.getEmailAddress())){  // 정규표현식과 다른 형식으로 받으면 invalid
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);

@@ -91,6 +91,7 @@ public class UserProvider {
             return new PostLoginRes(userIdx,jwt);
         }
         else{
+
             throw new BaseException(FAILED_TO_LOGIN);
         }
 
