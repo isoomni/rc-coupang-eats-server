@@ -24,7 +24,7 @@ public class KakaoController {
         // 2. 인증코드로 토큰 전달
         HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
 
-        System.out.println("login ingo : "+ userInfo.toString());
+        System.out.println("login info : "+ userInfo.toString());
 
         if(userInfo.get("email") != null){
             session.setAttribute("userId", userInfo.get("email"));

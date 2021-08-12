@@ -31,15 +31,15 @@ public class KakaoAPI {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
-            sb.append("&client_id=8a066f0af57f4f05574989407104a155");
+            sb.append("&client_id=6dde27190208db5a6f50eb21dc2dc4d9");
             sb.append("&redirect_url=https://product.riley1.site/app/kakao/login");
             sb.append("&code="+code);
 
             bw.write(sb.toString());
             bw.flush();
 
-            int responsCode = conn.getResponseCode();
-            System.out.println("response code = " + responsCode);
+            int responseCode = conn.getResponseCode();
+            System.out.println("response code = " + responseCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -92,7 +92,7 @@ public class KakaoAPI {
             JsonElement element = parser.parse(result);
 
             JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao-account").getAsJsonObject();
+            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
             String nickname = properties.getAsJsonObject().get("nickname").getAsString();
             String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
