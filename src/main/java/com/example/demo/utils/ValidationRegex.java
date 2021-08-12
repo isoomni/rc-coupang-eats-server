@@ -25,7 +25,7 @@ public class ValidationRegex {
     }
 
     public static boolean isRegexReviewContents(String target) {
-        String regex = "^[.]{1,300}$";  // 글자수 제한 300자
+        String regex = "^.{1,300}$";  // 글자수 제한 300자
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(target);
         return matcher.find();
