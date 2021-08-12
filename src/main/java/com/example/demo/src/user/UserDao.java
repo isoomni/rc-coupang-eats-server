@@ -126,7 +126,7 @@ public class UserDao {
      * [GET] /users/:userIdx/addresses
      * @return BaseResponse<GetAddressRes>
      */
-    public GetAddressRes getAddress(int userIdx){
+    public List<GetAddressRes> getAddress(int userIdx){
         // 주소 정보
         String Query1 = "SELECT DA.addressTitle, CONCAT(DA.roadNameAddress, DA.detailedAddress) AS address\n" +
                 "FROM RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
@@ -137,7 +137,7 @@ public class UserDao {
         int getOrderParams1 = userIdx;
 
         // 리턴
-        return this.jdbcTemplate.queryForObject(Query1,
+        return this.jdbcTemplate.query(Query1,
                         (rs, rowNum)->new GetAddressRes(
                                 rs.getString("addressTitle"),
                                 rs.getString("address")

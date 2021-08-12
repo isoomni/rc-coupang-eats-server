@@ -159,11 +159,11 @@ public class RestaurantController {
 
     /**
      * 식당 리뷰 수정 API
-     * [GET] /restaurants/:userIdx/reviews/:reviewIdx
+     * [PATCH] /restaurants/:userIdx/reviews/:reviewIdx
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}/carts/{cartIdx}") // (PATCH) 127.0.0.1:9090/app/restaurants/:userIdx/reviews/:reviewIdx
+    @PatchMapping("/{userIdx}/reviews/{reviewIdx}") // (PATCH) 127.0.0.1:9090/app/restaurants/:userIdx/reviews/:reviewIdx
     public BaseResponse<String> modifyReview(@PathVariable("userIdx") int userIdx, @PathVariable("reviewIdx") int reviewIdx, @RequestBody Review review){
         try{
             //jwt에서 idx 추출.

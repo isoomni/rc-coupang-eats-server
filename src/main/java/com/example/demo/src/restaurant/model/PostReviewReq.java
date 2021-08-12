@@ -16,6 +16,6 @@ public class PostReviewReq {
     private String reviewImgUrlOne;
     private String reviewImgStatus;
     private String reviewContents;
-    private String reviewStar;
+    private Double reviewStar;
     private String status;
 }

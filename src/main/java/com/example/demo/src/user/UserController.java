@@ -161,7 +161,7 @@ public class UserController {
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/users/{userIdx}/status") // (PATCH) 127.0.0.1:9090/app/users/:userIdx/status
+    @PatchMapping("/{userIdx}/status") // (PATCH) 127.0.0.1:9090/app/users/:userIdx/status
     public BaseResponse<String> modifyUserStatus(@PathVariable("userIdx") int userIdx, @RequestBody UserStatus userStatus){
         try{
             //jwt에서 idx 추출.
@@ -190,7 +190,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}/addresses") // (GET) 127.0.0.1:9090/app/users/:userIdx/addresses
-    public BaseResponse<GetAddressRes> getAddress(@PathVariable("userIdx") int userIdx){
+    public BaseResponse<List<GetAddressRes>> getAddress(@PathVariable("userIdx") int userIdx){
         try{
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
@@ -199,7 +199,7 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
             //같다면 유저네임 변경
-            GetAddressRes getAddressRes = userProvider.getAddress(userIdx);
+            List<GetAddressRes> getAddressRes = userProvider.getAddress(userIdx);
             return new BaseResponse<>(getAddressRes);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -234,7 +234,7 @@ public class UserController {
      * @return BaseResponse<GetAddressRes>
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}/carts/{cartIdx}") // (PATCH) 127.0.0.1:9000/app/users/:userIdx/addresses/:deliveryAddressIdx
+    @PatchMapping("/{userIdx}/addresses/{deliveryAddressIdx}") // (PATCH) 127.0.0.1:9090/app/users/:userIdx/addresses/:deliveryAddressIdx
     public BaseResponse<String> modifyOrder(@PathVariable("userIdx") int userIdx, @PathVariable("deliveryAddressIdx") int deliveryAddressIdx, @RequestBody Address address){
         try{
             //jwt에서 idx 추출.

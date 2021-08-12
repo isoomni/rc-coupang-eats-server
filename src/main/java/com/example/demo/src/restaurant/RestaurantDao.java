@@ -973,7 +973,7 @@ public class RestaurantDao {
      */
     public int createReview(PostReviewReq postReviewReq){
         String Query1 = "insert into RC_coupang_eats_d_Riley.Review (restaurantIdx, orderIdx, userIdx, reviewImgUrlOne, reviewImgStatus, reviewContents, reviewStar, status) VALUES (?,?,?,?,?,?,?,?)";
-        Object[] createOrderParams = new Object[]{postReviewReq.getRestaurantIdx(), postReviewReq.getRestaurantIdx(), postReviewReq.getReviewImgUrlOne(), postReviewReq.getReviewImgStatus(), postReviewReq.getReviewContents(), postReviewReq.getReviewStar(), postReviewReq.getStatus()};
+        Object[] createOrderParams = new Object[]{postReviewReq.getRestaurantIdx(), postReviewReq.getOrderIdx(), postReviewReq.getUserIdx(), postReviewReq.getReviewImgUrlOne(), postReviewReq.getReviewImgStatus(), postReviewReq.getReviewContents(), postReviewReq.getReviewStar(), postReviewReq.getStatus()};
         this.jdbcTemplate.update(Query1, createOrderParams);
 
         String lastInsertIdQuery = "select last_insert_id()";

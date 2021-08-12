@@ -90,7 +90,7 @@ public class FavoriteController {
      * @return BaseResponse<GetFavoriteRes>
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}/{favoritesIdx}/status") // (PATCH) 127.0.0.1:9000/app/favorites/:userIdx/:restaurantsIdx/status
+    @PatchMapping("/{userIdx}/{favoritesIdx}/status") // (PATCH) 127.0.0.1:9090/app/favorites/:userIdx/:favoritesIdx/status
     public BaseResponse<String> modifyOrderStatus(@PathVariable("userIdx") int userIdx,@PathVariable("favoritesIdx") int favoritesIdx, @RequestBody Favorite favorite){
         try{
             //jwt에서 idx 추출.

@@ -101,9 +101,9 @@ public class UserProvider {
      * [GET] /users/:userIdx/addresses
      * @return BaseResponse<GetAddressRes>
      */
-    public GetAddressRes getAddress(int userIdx) throws BaseException{
+    public List<GetAddressRes> getAddress(int userIdx) throws BaseException{
         try{
-            GetAddressRes getAddressRes = userDao.getAddress(userIdx);
+            List<GetAddressRes> getAddressRes = userDao.getAddress(userIdx);
             return getAddressRes;
         } catch (Exception exception) {
             exception.printStackTrace();
