@@ -33,7 +33,7 @@ public class RestaurantService {
      */
     public PostReviewRes createReview(PostReviewReq postReviewReq) throws BaseException { // 숙소정보를 생성하려고 하는데
         //중복
-        if(restaurantProvider.checkReview(postReviewReq.getUserIdx()) ==1){
+        if(restaurantProvider.checkReview(postReviewReq.getOrderIdx()) ==1){
             throw new BaseException(POST_REVIEWS_EXISTS_REVIEW);
         }
         try {

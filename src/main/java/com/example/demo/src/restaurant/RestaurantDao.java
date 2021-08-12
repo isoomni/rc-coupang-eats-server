@@ -970,9 +970,9 @@ public class RestaurantDao {
      * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
      * @return BaseResponse<GetReviewRes>
      */
-    public int checkReview(int userIdx ){
-        String checkEmailQuery = "select exists(select orderIdx from RC_coupang_eats_d_Riley.Review where userIdx = ?)";
-        int checkReviewParams = userIdx;
+    public int checkReview(int orderIdx ){
+        String checkEmailQuery = "select exists(select orderIdx from RC_coupang_eats_d_Riley.Review where orderIdx = ?)";
+        int checkReviewParams = orderIdx;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
                 checkReviewParams);

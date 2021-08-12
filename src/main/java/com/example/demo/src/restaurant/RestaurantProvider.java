@@ -180,9 +180,9 @@ public class RestaurantProvider {
      * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
      * @return BaseResponse<GetReviewRes>
      */
-    public int checkReview(int userIdx) throws BaseException{
+    public int checkReview(int orderIdx) throws BaseException{
         try{
-            return restaurantDao.checkReview(userIdx);
+            return restaurantDao.checkReview(orderIdx);
         } catch (Exception exception){
             exception.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
