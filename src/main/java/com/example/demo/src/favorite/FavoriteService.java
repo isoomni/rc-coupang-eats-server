@@ -4,6 +4,9 @@ import com.example.demo.config.BaseException;
 import com.example.demo.src.favorite.model.*;
 import com.example.demo.src.order.OrderDao;
 import com.example.demo.src.order.OrderProvider;
+import com.example.demo.src.order.model.PatchOrderStatusReq;
+import com.example.demo.src.order.model.PostOrderReq;
+import com.example.demo.src.order.model.PostOrderRes;
 import com.example.demo.src.restaurant.RestaurantDao;
 import com.example.demo.src.restaurant.RestaurantProvider;
 import org.slf4j.Logger;
@@ -28,6 +31,44 @@ public class FavoriteService {
         this.favoriteDao = favoriteDao;
         this.favoriteProvider = favoriteProvider;
     }
+
+    /**
+     * 즐겨찾기 등록
+     * [GET] /favorites/:userIdx
+     * @return BaseResponse<GetFavoriteRes>
+     */
+    public PostFavoriteRes createFavorite(PostFavoriteReq postFavoriteReq) throws BaseException { // 숙소정보를 생성하려고 하는데
+
+        try {
+            int favoritesIdx = favoriteDao.createFavorite(postFavoriteReq);
+            return new PostFavoriteRes(favoritesIdx);
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+    /**
+     * 즐겨찾기 삭제
+     * [GET] /favorites/:userIdx/:restaurantsIdx/status
+     * @return BaseResponse<GetFavoriteRes>
+     */
+    public void modifyFavorite(PatchFavoriteReq patchFavoriteReq) throws BaseException {
+        try{
+            int result = favoriteDao.modifyFavorite(patchFavoriteReq);
+            if (result == 0){
+                throw new BaseException(MODIFY_FAIL_ORDER);
+            }
+        } catch(Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+
 
     /**
      * 로그 테스트 API

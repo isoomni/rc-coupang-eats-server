@@ -3,6 +3,7 @@ package com.example.demo.src.favorite;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.favorite.model.*;
 import com.example.demo.src.order.OrderDao;
+import com.example.demo.src.restaurant.model.GetRestaurantRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,32 @@ public class FavoriteProvider {
     }
 
 
+    /**
+     * 즐겨찾기 조회
+     * [GET] /favorites/:userIdx
+     * @return BaseResponse<GetFavoriteRes>
+     */
+    // 최근 주문한 순
+    public GetFavoriteRes getFavoriteByOrder(int favoritesIdx) throws BaseException{
+        try{
+            GetFavoriteRes getFavoriteRes = favoriteDao.getFavoriteByOrder(favoritesIdx);
+            return getFavoriteRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 최근 추가한 순
+    public GetFavoriteRes getFavoriteByAdd(int favoritesIdx) throws BaseException{
+        try{
+            GetFavoriteRes getFavoriteRes = favoriteDao.getFavoriteByAdd(favoritesIdx);
+            return getFavoriteRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
     /**
      * 로그 테스트 API
      * [GET] /test/log

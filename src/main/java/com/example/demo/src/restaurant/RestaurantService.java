@@ -1,6 +1,7 @@
 package com.example.demo.src.restaurant;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.order.model.PatchOrderReq;
 import com.example.demo.src.restaurant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,59 @@ public class RestaurantService {
         this.restaurantDao = restaurantDao;
         this.restaurantProvider = restaurantProvider;
     }
+
+    /**
+     * 식당 리뷰 등록 API
+     * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
+     * @return BaseResponse<GetReviewRes>
+     */
+    public PostReviewRes createReview(PostReviewReq postReviewReq) throws BaseException { // 숙소정보를 생성하려고 하는데
+
+        try {
+            int reviewIdx = restaurantDao.createReview(postReviewReq);
+            return new PostReviewRes(reviewIdx);
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+    /**
+     * 식당 리뷰 수정 API
+     * [GET] /restaurants/:userIdx/reviews/:reviewIdx
+     * @return BaseResponse<String>
+     */
+    public void modifyReview(PatchReviewReq patchReviewReq) throws BaseException {
+        try{
+            int result = restaurantDao.modifyReview(patchReviewReq);
+            if (result == 0){
+                throw new BaseException(MODIFY_FAIL_ORDER);
+            }
+        } catch(Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 식당 리뷰 삭제 API
+     * [GET] /restaurants/:userIdx/reviews/:reviewIdx/status
+     * @return BaseResponse<GetReviewRes>
+     */
+    public void modifyReview(PatchReviewStatusReq patchReviewStatusReq) throws BaseException {
+        try{
+            int result = restaurantDao.modifyReview(patchReviewStatusReq);
+            if (result == 0){
+                throw new BaseException(MODIFY_FAIL_ORDER);
+            }
+        } catch(Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 
     /**
      * 로그 테스트 API

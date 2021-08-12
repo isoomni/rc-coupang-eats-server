@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.src.home.model.GetCouponBannerImgListRes;
+import com.example.demo.src.order.model.*;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -106,6 +107,79 @@ public class UserDao {
                 getPwdParams
                 );
 
+    }
+
+    /**
+     * 유저 탈퇴 API
+     * [PATCH] /users/:userIdx/status
+     * @return BaseResponse<String>
+     */
+    public int modifyUserStatus(PatchUserStatusReq patchUserStatusReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.User set status = ? where userIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchUserStatusReq.getStatus(), patchUserStatusReq.getUserIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
+    }
+
+    /**
+     * 배달 주소 조회 API
+     * [GET] /users/:userIdx/addresses
+     * @return BaseResponse<GetAddressRes>
+     */
+    public GetAddressRes getAddress(int userIdx){
+        // 주소 정보
+        String Query1 = "SELECT DA.addressTitle, CONCAT(DA.roadNameAddress, DA.detailedAddress) AS address\n" +
+                "FROM RC_coupang_eats_d_Riley.DeliveryAddress DA\n" +
+                "WHERE DA.userIdx = ?\n" +
+                "ORDER BY FIELD(DA.addressTitle, '회사', '집') DESC, DA.addressTitle ASC;";
+
+        // 파라미터
+        int getOrderParams1 = userIdx;
+
+        // 리턴
+        return this.jdbcTemplate.queryForObject(Query1,
+                        (rs, rowNum)->new GetAddressRes(
+                                rs.getString("addressTitle"),
+                                rs.getString("address")
+                        ),getOrderParams1
+        );
+    }
+
+    /**
+     * 배달 주소 등록 API
+     * [GET] /users/:userIdx/addresses
+     * @return BaseResponse<GetAddressRes>
+     */
+    public int createAddress(PostAddressReq postAddressReq){
+        String Query1 = "insert into RC_coupang_eats_d_Riley.DeliveryAddress (userIdx, addressTitle, roadNameAddress, detailedAddress, userLatitude, userLongtitude) VALUES (?,?,?,?,?,?)";
+        Object[] createOrderParams = new Object[]{postAddressReq.getUserIdx(), postAddressReq.getAddressTitle(), postAddressReq.getRoadNameAddress(), postAddressReq.getDetailedAddress(), postAddressReq.getUserLatitude(), postAddressReq.getUserLongtitude()};
+        this.jdbcTemplate.update(Query1, createOrderParams);
+
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
+    }
+    /**
+     * 배달 주소 수정 API
+     * [GET] /users/:userIdx/addresses/:deliveryAddressIdx
+     * @return BaseResponse<GetAddressRes>
+     */
+    public int modifyAddress(PatchAddressReq patchAddressReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.DeliveryAddress set addressTitle = ?, roadNameAddress = ?, detailedAddress = ?, userLatitude = ?, userLongtitude = ? where deliveryAddressIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchAddressReq.getAddressTitle(), patchAddressReq.getRoadNameAddress(), patchAddressReq.getDetailedAddress(), patchAddressReq.getUserLatitude(), patchAddressReq.getUserLongtitude(), patchAddressReq.getDeliveryAddressIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
+    }
+
+    /**
+     * 배달 주소 삭제 API
+     * [GET] /users/:userIdx/addresses/:deliveryAddressIdx/status
+     * @return BaseResponse<GetAddressRes>
+     */
+    public int modifyAddressStatus(PatchAddressStatusReq patchAddressStatusReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.DeliveryAddress set status = ? where deliveryAddressIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchAddressStatusReq.getStatus(), patchAddressStatusReq.getDeliveryAddressIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
     }
 
 

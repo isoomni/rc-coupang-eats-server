@@ -12,16 +12,28 @@ com/example/demo/src/order/OrderDao.java
  com.example.demo.src.order.OrderDao
 com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
+com/example/demo/src/favorite/model/PostFavoriteReq.java
+ com.example.demo.src.favorite.model.PostFavoriteReq
+com/example/demo/src/restaurant/model/Review.java
+ com.example.demo.src.restaurant.model.Review
 com/example/demo/src/order/model/GetOrderRes3.java
  com.example.demo.src.order.model.GetOrderRes3
+com/example/demo/src/restaurant/model/PatchReviewReq.java
+ com.example.demo.src.restaurant.model.PatchReviewReq
+com/example/demo/src/user/model/PatchAddressReq.java
+ com.example.demo.src.user.model.PatchAddressReq
 com/example/demo/config/BaseResponseStatus.java
  com.example.demo.config.BaseResponseStatus
 com/example/demo/src/restaurant/RestaurantProvider.java
  com.example.demo.src.restaurant.RestaurantProvider
 com/example/demo/src/order/model/PostOrderRes.java
  com.example.demo.src.order.model.PostOrderRes
+com/example/demo/src/user/model/PostAddressRes.java
+ com.example.demo.src.user.model.PostAddressRes
 com/example/demo/src/order/model/GetOrderRes.java
  com.example.demo.src.order.model.GetOrderRes
+com/example/demo/src/user/model/GetAddressRes.java
+ com.example.demo.src.user.model.GetAddressRes
 com/example/demo/src/home/model/GetPopularFranchiseRes.java
  com.example.demo.src.home.model.GetPopularFranchiseRes
 com/example/demo/src/restaurant/model/GetReviewRes1.java
@@ -50,10 +62,16 @@ com/example/demo/src/favorite/FavoriteService.java
  com.example.demo.src.favorite.FavoriteService
 com/example/demo/src/user/UserService.java
  com.example.demo.src.user.UserService
+com/example/demo/src/favorite/model/PostFavoriteRes.java
+ com.example.demo.src.favorite.model.PostFavoriteRes
 com/example/demo/src/restaurant/model/GetRestaurantNameAndLikeRes.java
  com.example.demo.src.restaurant.model.GetRestaurantNameAndLikeRes
 com/example/demo/config/BaseException.java
  com.example.demo.config.BaseException
+com/example/demo/src/favorite/model/GetFavoriteRes2.java
+ com.example.demo.src.favorite.model.GetFavoriteRes2
+com/example/demo/src/user/model/PostAddressReq.java
+ com.example.demo.src.user.model.PostAddressReq
 com/example/demo/src/order/OrderService.java
  com.example.demo.src.order.OrderService
 com/example/demo/src/restaurant/RestaurantDao.java
@@ -64,10 +82,16 @@ com/example/demo/src/order/model/GetOrderRes1.java
  com.example.demo.src.order.model.GetOrderRes1
 com/example/demo/src/user/model/PostUserReq.java
  com.example.demo.src.user.model.PostUserReq
+com/example/demo/src/favorite/model/PatchFavoriteReq.java
+ com.example.demo.src.favorite.model.PatchFavoriteReq
+com/example/demo/src/user/model/UserStatus.java
+ com.example.demo.src.user.model.UserStatus
 com/example/demo/src/home/HomeProvider.java
  com.example.demo.src.home.HomeProvider
 com/example/demo/src/home/model/GetHomeRes.java
  com.example.demo.src.home.model.GetHomeRes
+com/example/demo/src/user/model/Address.java
+ com.example.demo.src.user.model.Address
 com/example/demo/src/favorite/FavoriteController.java
  com.example.demo.src.favorite.FavoriteController
 com/example/demo/src/restaurant/model/GetReviewsRes.java
@@ -80,14 +104,22 @@ com/example/demo/src/user/model/PostLoginRes.java
  com.example.demo.src.user.model.PostLoginRes
 com/example/demo/src/user/model/GetUsersRes.java
  com.example.demo.src.user.model.GetUsersRes
+com/example/demo/src/restaurant/model/PostReviewRes.java
+ com.example.demo.src.restaurant.model.PostReviewRes
+com/example/demo/src/restaurant/model/PatchReviewStatusReq.java
+ com.example.demo.src.restaurant.model.PatchReviewStatusReq
 com/example/demo/src/user/UserDao.java
  com.example.demo.src.user.UserDao
 com/example/demo/utils/AES128.java
  com.example.demo.utils.AES128
+com/example/demo/src/user/model/PatchAddressStatusReq.java
+ com.example.demo.src.user.model.PatchAddressStatusReq
 com/example/demo/src/user/model/PatchUserReq.java
  com.example.demo.src.user.model.PatchUserReq
 com/example/demo/src/order/model/PatchOrderReq.java
  com.example.demo.src.order.model.PatchOrderReq
+com/example/demo/src/user/model/AddressStatus.java
+ com.example.demo.src.user.model.AddressStatus
 com/example/demo/src/WebSecurityConfig.java
  com.example.demo.src.WebSecurityConfig
 com/example/demo/src/order/OrderProvider.java
@@ -104,6 +136,8 @@ com/example/demo/src/user/model/PostLoginReq.java
  com.example.demo.src.user.model.PostLoginReq
 com/example/demo/src/home/model/GetFilteredRes.java
  com.example.demo.src.home.model.GetFilteredRes
+com/example/demo/src/favorite/model/GetFavoriteRes1.java
+ com.example.demo.src.favorite.model.GetFavoriteRes1
 com/example/demo/src/user/model/GetUserRes1.java
  com.example.demo.src.user.model.GetUserRes1
 com/example/demo/src/restaurant/model/GetMenuCategoryListRes.java
@@ -112,6 +146,10 @@ com/example/demo/src/user/UserController.java
  com.example.demo.src.user.UserController
 com/example/demo/src/order/OrderController.java
  com.example.demo.src.order.OrderController
+com/example/demo/src/restaurant/model/ReviewStatus.java
+ com.example.demo.src.restaurant.model.ReviewStatus
+com/example/demo/src/user/model/PatchUserStatusReq.java
+ com.example.demo.src.user.model.PatchUserStatusReq
 com/example/demo/src/user/model/User.java
  com.example.demo.src.user.model.User
 com/example/demo/src/order/model/PostOrderReq.java
@@ -122,6 +160,8 @@ com/example/demo/src/restaurant/model/GetReviewRes2.java
  com.example.demo.src.restaurant.model.GetReviewRes2
 com/example/demo/src/user/model/GetUserRes.java
  com.example.demo.src.user.model.GetUserRes
+com/example/demo/src/favorite/model/Favorite.java
+ com.example.demo.src.favorite.model.Favorite
 com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
 com/example/demo/src/restaurant/RestaurantController.java
@@ -130,6 +170,8 @@ com/example/demo/utils/JwtService.java
  com.example.demo.utils.JwtService
 com/example/demo/src/user/UserProvider.java
  com.example.demo.src.user.UserProvider
+com/example/demo/src/restaurant/model/PostReviewReq.java
+ com.example.demo.src.restaurant.model.PostReviewReq
 com/example/demo/src/restaurant/model/GetCategoryNameRes.java
  com.example.demo.src.restaurant.model.GetCategoryNameRes
 com/example/demo/src/restaurant/model/GetRestaurantRes.java

@@ -1,5 +1,7 @@
 package com.example.demo.src.restaurant;
 
+import com.example.demo.src.order.model.Order;
+import com.example.demo.src.order.model.PatchOrderReq;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,6 +133,89 @@ public class RestaurantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 식당 리뷰 등록 API
+     * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
+     * @return BaseResponse<GetReviewRes>
+     */
+    @ResponseBody
+    @PostMapping("/{restaurantIdx}/reviews/{userIdx}") // (GET) 127.0.0.1:9090/app/restaurants/:restaurantIdx/reviews/:userIdx
+    public BaseResponse<PostReviewRes> createReview(@PathVariable("restaurantIdx") int restaurantIdx, @PathVariable("userIdx") int userIdx, @RequestBody PostReviewReq postReviewReq){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PostReviewRes postReviewRes = restaurantService.createReview(postReviewReq);
+            return new BaseResponse<>(postReviewRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 식당 리뷰 수정 API
+     * [GET] /restaurants/:userIdx/reviews/:reviewIdx
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/carts/{cartIdx}") // (PATCH) 127.0.0.1:9090/app/restaurants/:userIdx/reviews/:reviewIdx
+    public BaseResponse<String> modifyReview(@PathVariable("userIdx") int userIdx, @PathVariable("reviewIdx") int reviewIdx, @RequestBody Review review){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchReviewReq patchReviewReq = new PatchReviewReq(reviewIdx, review.getReviewImgUrlOne(), review.getReviewImgStatus(), review.getReviewContents(), review.getReviewStar());
+            restaurantService.modifyReview(patchReviewReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 식당 리뷰 삭제 API
+     * [GET] /restaurants/:userIdx/reviews/:reviewIdx/status
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/reviews/{reviewIdx}/status") // (PATCH) 127.0.0.1:9090/app/restaurants/:userIdx/reviews/:reviewIdx/status
+    public BaseResponse<String> modifyReviewStatus(@PathVariable("userIdx") int userIdx, @PathVariable("reviewIdx") int reviewIdx, @RequestBody ReviewStatus reviewStatus){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchReviewStatusReq patchReviewStatusReq = new PatchReviewStatusReq(reviewIdx, reviewStatus.getStatus());
+            restaurantService.modifyReview(patchReviewStatusReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+
+
     /**
      * 카테고리 조회 API
      * [GET] /categories

@@ -1,6 +1,7 @@
 package com.example.demo.src.restaurant;
 
 import com.example.demo.src.home.model.*;
+import com.example.demo.src.order.model.PatchOrderReq;
 import com.example.demo.src.restaurant.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -964,6 +965,45 @@ public class RestaurantDao {
         );
 
     }
+
+    /**
+     * 식당 리뷰 등록 API
+     * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
+     * @return BaseResponse<GetReviewRes>
+     */
+    public int createReview(PostReviewReq postReviewReq){
+        String Query1 = "insert into RC_coupang_eats_d_Riley.Review (restaurantIdx, orderIdx, userIdx, reviewImgUrlOne, reviewImgStatus, reviewContents, reviewStar, status) VALUES (?,?,?,?,?,?,?,?)";
+        Object[] createOrderParams = new Object[]{postReviewReq.getRestaurantIdx(), postReviewReq.getRestaurantIdx(), postReviewReq.getReviewImgUrlOne(), postReviewReq.getReviewImgStatus(), postReviewReq.getReviewContents(), postReviewReq.getReviewStar(), postReviewReq.getStatus()};
+        this.jdbcTemplate.update(Query1, createOrderParams);
+
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
+    }
+
+    /**
+     * 식당 리뷰 수정 API
+     * [GET] /restaurants/:userIdx/reviews/:reviewIdx
+     * @return BaseResponse<String>
+     */
+    public int modifyReview(PatchReviewReq patchReviewReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.Review set reviewImgUrlOne = ?, reviewImgStatus=?,reviewContents = ?, reviewStar = ? where reviewIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchReviewReq.getReviewImgUrlOne(), patchReviewReq.getReviewImgStatus(), patchReviewReq.getReviewContents(), patchReviewReq.getReviewStar(), patchReviewReq.getReviewIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
+    }
+
+    /**
+     * 식당 리뷰 삭제 API
+     * [GET] /restaurants/:userIdx/reviews/:reviewIdx/status
+     * @return BaseResponse<GetReviewRes>
+     */
+    public int modifyReview(PatchReviewStatusReq patchReviewStatusReq){
+        String modifyOrderQuery = "update RC_coupang_eats_d_Riley.Review set status = ? where reviewIdx = ?";
+        Object[] modifyOrderParams = new Object[]{patchReviewStatusReq.getStatus(), patchReviewStatusReq.getReviewIdx()};
+
+        return this.jdbcTemplate.update(modifyOrderQuery,modifyOrderParams);
+    }
+
     /**
      * 카테고리 조회 API
      * [GET] /categories

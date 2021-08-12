@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.order.model.GetOrderRes;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -94,6 +95,22 @@ public class UserProvider {
         }
 
     }
+
+    /**
+     * 배달 주소 조회 API
+     * [GET] /users/:userIdx/addresses
+     * @return BaseResponse<GetAddressRes>
+     */
+    public GetAddressRes getAddress(int userIdx) throws BaseException{
+        try{
+            GetAddressRes getAddressRes = userDao.getAddress(userIdx);
+            return getAddressRes;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     /**
      * 로그 테스트 API
      * [GET] /test/log

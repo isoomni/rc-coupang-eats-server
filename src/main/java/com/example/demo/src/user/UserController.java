@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.order.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -153,6 +154,136 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 유저 탈퇴 API
+     * [PATCH] /users/:userIdx/status
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/users/{userIdx}/status") // (PATCH) 127.0.0.1:9090/app/users/:userIdx/status
+    public BaseResponse<String> modifyUserStatus(@PathVariable("userIdx") int userIdx, @RequestBody UserStatus userStatus){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchUserStatusReq patchUserStatusReq = new PatchUserStatusReq(userIdx, userStatus.getStatus());
+            userService.modifyUserStatus(patchUserStatusReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 배달 주소 조회 API
+     * [GET] /users/:userIdx/addresses
+     * @return BaseResponse<GetAddressRes>
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/addresses") // (GET) 127.0.0.1:9090/app/users/:userIdx/addresses
+    public BaseResponse<GetAddressRes> getAddress(@PathVariable("userIdx") int userIdx){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+            //같다면 유저네임 변경
+            GetAddressRes getAddressRes = userProvider.getAddress(userIdx);
+            return new BaseResponse<>(getAddressRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 배달 주소 등록 API
+     * [GET] /users/:userIdx/addresses
+     * @return BaseResponse<PostAddressRes>
+     */
+    @ResponseBody
+    @PostMapping("/{userIdx}/addresses") // (GET) 127.0.0.1:9090/app/users/:userIdx/addresses
+    public BaseResponse<PostAddressRes> createAddress(@PathVariable("userIdx") int userIdx, @RequestBody PostAddressReq postAddressReq){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PostAddressRes postAddressRes = userService.createAddress(postAddressReq);
+            return new BaseResponse<>(postAddressRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    /**
+     * 배달 주소 수정 API
+     * [GET] /users/:userIdx/addresses/:deliveryAddressIdx
+     * @return BaseResponse<GetAddressRes>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/carts/{cartIdx}") // (PATCH) 127.0.0.1:9000/app/users/:userIdx/addresses/:deliveryAddressIdx
+    public BaseResponse<String> modifyOrder(@PathVariable("userIdx") int userIdx, @PathVariable("deliveryAddressIdx") int deliveryAddressIdx, @RequestBody Address address){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchAddressReq patchAddressReq = new PatchAddressReq(deliveryAddressIdx, address.getAddressTitle(), address.getRoadNameAddress(), address.getDetailedAddress(), address.getUserLatitude(), address.getUserLongtitude());
+            userService.modifyAddress(patchAddressReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    /**
+     * 배달 주소 삭제 API
+     * [GET] /users/:userIdx/addresses/:deliveryAddressIdx/status
+     * @return BaseResponse<GetAddressRes>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/addresses/{deliveryAddressIdx}/status") // (PATCH) 127.0.0.1:9000/app/users/:userIdx/addresses/:deliveryAddressIdx/status
+    public BaseResponse<String> modifyAddressStatus(@PathVariable("userIdx") int userIdx, @PathVariable("deliveryAddressIdx") int deliveryAddressIdx, @RequestBody AddressStatus addressStatus){
+        try{
+            //jwt에서 idx 추출.
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+
+            PatchAddressStatusReq patchAddressStatusReq = new PatchAddressStatusReq(deliveryAddressIdx, addressStatus.getStatus());
+            userService.modifyAddressStatus(patchAddressStatusReq);
+
+            String result = "";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
     /**
      * 로그 테스트 API
      * [GET] /test/log
