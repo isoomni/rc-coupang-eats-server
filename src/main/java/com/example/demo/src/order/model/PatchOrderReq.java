@@ -14,4 +14,5 @@ public class PatchOrderReq {
     private String requestedTermToOwner;
     private String requestedTermToDeliveryMan;
     private String disposableItemReceivingStatus;
+
 }

@@ -176,6 +176,20 @@ public class RestaurantProvider {
         }
     }
     /**
+     * 이미 존재하는 리뷰입니다.
+     * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
+     * @return BaseResponse<GetReviewRes>
+     */
+    public int checkReview(int userIdx) throws BaseException{
+        try{
+            return restaurantDao.checkReview(userIdx);
+        } catch (Exception exception){
+            exception.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
      * 카테고리 조회 API
      * [GET] /categories
      * @return BaseResponse<GetCategoryRes>

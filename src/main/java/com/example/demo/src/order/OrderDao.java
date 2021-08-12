@@ -103,10 +103,17 @@ public class OrderDao {
         );
     }
 
+    /**
+     * 카트 등록 API
+     * [POST] /orders/:userIdx/carts
+     * @return BaseResponse<PostOrderRes>
+     */
     public int createOrder(PostOrderReq postOrderReq){
-        String Query1 = "insert into RC_coupang_eats_d_Riley.Cart (restaurantIdx, userIdx, paymentMethodIdx, requestedTermToOwner, requestedTermToDeliveryMan, disposableItemReceivingStatus) VALUES (?,?,?,?,?,?)";
+        String Query1 = "INSERT INTO RC_coupang_eats_d_Riley.Cart (restaurantIdx, userIdx, paymentMethodIdx, requestedTermToOwner, requestedTermToDeliveryMan, disposableItemReceivingStatus) VALUES (?,?,?,?,?,?)";
+        String Query2 = "INSERT INTO RC_coupang_eats_d_Riley.CartedMenu (cartIdx, menuIdx, menuQuantity) VALUES (?,?,?)";
         Object[] createOrderParams = new Object[]{postOrderReq.getRestaurantIdx(), postOrderReq.getUserIdx(), postOrderReq.getPaymentMethodIdx(), postOrderReq.getRequestedTermToOwner(), postOrderReq.getRequestedTermToDeliveryMan(), postOrderReq.getDisposableItemReceivingStatus()};
-        this.jdbcTemplate.update(Query1, createOrderParams);
+        Object[] createOrderParams2 = new Object[]{postOrderReq.getCartIdx(), postOrderReq.getMenuIdx(), postOrderReq.getMenuQuantity()};
+        this.jdbcTemplate.update(Query1, Query2, createOrderParams, createOrderParams2);
 
         String lastInsertIdQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);

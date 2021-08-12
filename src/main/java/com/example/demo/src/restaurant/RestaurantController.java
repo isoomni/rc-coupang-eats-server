@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.utils.ValidationRegex.isRegexEmail;
+import static com.example.demo.utils.ValidationRegex.isRegexReviewContents;
 
 
 @RestController
@@ -150,12 +152,28 @@ public class RestaurantController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
 
+            if(postReviewReq.getReviewContents() == null){
+                return new BaseResponse<>(POST_REVIEWS_EMPTY_CONTENTS);
+            }
+            if(postReviewReq.getReviewStar() == null){
+                return new BaseResponse<>(POST_REVIEWS_EMPTY_STAR);
+            }
+            if(postReviewReq.getStatus() == null){
+                return new BaseResponse<>(POST_REVIEWS_EMPTY_STATUS);
+            }
+
+            //리뷰 내용 정규표현
+            if(!isRegexReviewContents(postReviewReq.getReviewContents())){  // 글자수 제한
+                return new BaseResponse<>(POST_REVIEWS_LONG_CONTENTS);
+            }
+
             PostReviewRes postReviewRes = restaurantService.createReview(postReviewReq);
             return new BaseResponse<>(postReviewRes);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
 
     /**
      * 식당 리뷰 수정 API
@@ -172,6 +190,17 @@ public class RestaurantController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
+            if(review.getReviewContents() == null){
+                return new BaseResponse<>(POST_REVIEWS_EMPTY_CONTENTS);
+            }
+            if(review.getReviewStar() == null){
+                return new BaseResponse<>(POST_REVIEWS_EMPTY_STAR);
+            }
+
+            //리뷰 내용 정규표현
+            if(!isRegexReviewContents(review.getReviewContents())){  // 글자수 제한
+                return new BaseResponse<>(POST_REVIEWS_LONG_CONTENTS);
+            }
 
             PatchReviewReq patchReviewReq = new PatchReviewReq(reviewIdx, review.getReviewImgUrlOne(), review.getReviewImgStatus(), review.getReviewContents(), review.getReviewStar());
             restaurantService.modifyReview(patchReviewReq);
@@ -200,7 +229,9 @@ public class RestaurantController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
-
+            if(reviewStatus.getStatus() == null){
+                return new BaseResponse<>(POST_REVIEWS_EMPTY_STATUS);
+            }
             PatchReviewStatusReq patchReviewStatusReq = new PatchReviewStatusReq(reviewIdx, reviewStatus.getStatus());
             restaurantService.modifyReview(patchReviewStatusReq);
 

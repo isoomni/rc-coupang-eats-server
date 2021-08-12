@@ -14,7 +14,7 @@ import java.util.List;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.utils.ValidationRegex.isRegexEmail;
+import static com.example.demo.utils.ValidationRegex.*;
 
 @RestController
 @RequestMapping("/app/users")
@@ -97,13 +97,35 @@ public class UserController {
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
-        if(postUserReq.getEmailAddress() == null){ // 받은 이메일 주소가 존재하지 않으면 엠티 에러
+        if(postUserReq.getEmailAddress() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
         }
+        if(postUserReq.getUserName() == null){
+            return new BaseResponse<>(POST_USERS_EMPTY_USERNAME);
+        }
+        if(postUserReq.getPhoneNum() == null){
+            return new BaseResponse<>(POST_USERS_EMPTY_PHONENUMBER);
+        }
+        if(postUserReq.getPassword() == null){
+            return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
+        }
+        if(postUserReq.getPassword() == postUserReq.getEmailAddress()){ // 아이디와 비밀번호가 같습니다.
+            return new BaseResponse<>(POST_USERS_PASSWORD_SAME_WITH_EMAIL);
+        }
+
         //이메일 정규표현
         if(!isRegexEmail(postUserReq.getEmailAddress())){  // 정규표현식과 다른 형식으로 받으면 invalid
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
+        //비밀번호 정규표현
+        if (!isRegexPassword(postUserReq.getPassword())){  // 특수문자 / 문자 / 숫자 포함 형태의 8~20자리 이내의 암호 정규식
+            return new BaseResponse<>(POST_USERS_INVALID_PASSWORD);
+        }
+        //전화번호 정규표현
+        if (!isRegexPhoneNum(postUserReq.getPhoneNum())){  // 01로 시작, 3 + 8 숫자
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENUMBER);
+        }
+
         try{
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
@@ -122,6 +144,27 @@ public class UserController {
         try{
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
             // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
+            if(postLoginReq.getEmailAddress() == null){
+                return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+            }
+            if(postLoginReq.getPassword() == null){
+                return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
+            }
+            if(postLoginReq.getPassword() == postLoginReq.getEmailAddress()){ // 아이디와 비밀번호가 같습니다.
+                return new BaseResponse<>(POST_USERS_PASSWORD_SAME_WITH_EMAIL);
+            }
+
+            if(postLoginReq.getStatus().equals('N')){
+                return new BaseResponse<>(POST_USERS_WITHDRAWAL);  // 탈퇴한 유저입니다.
+            }
+            //이메일 정규표현
+            if(!isRegexEmail(postLoginReq.getEmailAddress())){  // 정규표현식과 다른 형식으로 받으면 invalid
+                return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+            }
+            //비밀번호 정규표현
+            if (!isRegexPassword(postLoginReq.getPassword())){  // 특수문자 / 문자 / 숫자 포함 형태의 8~20자리 이내의 암호 정규식
+                return new BaseResponse<>(POST_USERS_INVALID_PASSWORD);
+            }
             PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
@@ -208,7 +251,7 @@ public class UserController {
 
     /**
      * 배달 주소 등록 API
-     * [GET] /users/:userIdx/addresses
+     * [POST] /users/:userIdx/addresses
      * @return BaseResponse<PostAddressRes>
      */
     @ResponseBody
@@ -222,6 +265,24 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }  // 이 부분까지는 유저가 사용하는 기능 중 유저에 대한 보안이 철저히 필요한 api 에서 사용
 
+            if(postAddressReq.getAddressTitle() == null){ // 배달주소 제목을 입력해주세요
+                return new BaseResponse<>(POST_ADDRESSES_EMPTY_TITLE);
+            }
+            if(postAddressReq.getRoadNameAddress() == null){ // 도로명주소를 입력해주세요
+                return new BaseResponse<>(POST_ADDRESSES_EMPTY_ROADNAME);
+            }
+            if(postAddressReq.getDetailedAddress() == null){ // 상세 주소를 입력해주세요
+                return new BaseResponse<>(POST_ADDRESSES_EMPTY_DETAIL);
+            }
+            if(postAddressReq.getUserLatitude() == null){ // 위도가 없습니다.
+                return new BaseResponse<>(POST_ADDRESSES_EMPTY_LATITUDE);
+            }
+            if(postAddressReq.getUserLongtitude() == null){ // 경도가 없습니다.
+                return new BaseResponse<>(POST_ADDRESSES_EMPTY_LONGTITUDE);
+            }
+
+
+
             PostAddressRes postAddressRes = userService.createAddress(postAddressReq);
             return new BaseResponse<>(postAddressRes);
         } catch (BaseException exception){
@@ -230,7 +291,7 @@ public class UserController {
     }
     /**
      * 배달 주소 수정 API
-     * [GET] /users/:userIdx/addresses/:deliveryAddressIdx
+     * [PATCH] /users/:userIdx/addresses/:deliveryAddressIdx
      * @return BaseResponse<GetAddressRes>
      */
     @ResponseBody
@@ -257,7 +318,7 @@ public class UserController {
     }
     /**
      * 배달 주소 삭제 API
-     * [GET] /users/:userIdx/addresses/:deliveryAddressIdx/status
+     * [PATCH] /users/:userIdx/addresses/:deliveryAddressIdx/status
      * @return BaseResponse<GetAddressRes>
      */
     @ResponseBody

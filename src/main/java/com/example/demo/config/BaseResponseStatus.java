@@ -26,9 +26,32 @@ public enum BaseResponseStatus {
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
 
     // [POST] /users
-    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
-    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
+    POST_USERS_EMPTY_PHONENUMBER(false, 2014, "전화번호를 입력해주세요"),
+    POST_USERS_EMPTY_PASSWORD(false, 2012, "비밀번호를 입력해주세요"),
+    POST_USERS_EMPTY_USERNAME(false, 2013, "사용자명을 입력해주세요"),
+    POST_USERS_EMPTY_EMAIL(false, 2011, "이메일을 입력해주세요."),
+    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."), // 형식적 validation
     POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
+    POST_USERS_PASSWORD_SAME_WITH_EMAIL(false, 2018, "이메일과 비밀번호가 같습니다."),
+    POST_USERS_INVALID_PASSWORD(false,2019,"비밀번호 형식을 확인해주세요."),
+    POST_USERS_INVALID_PHONENUMBER(false,2020,"전화번호 형식을 확인해주세요."),
+    POST_USERS_WITHDRAWAL(false, 2021, "탈퇴한 유저입니다."),
+
+    // [POST] /reviews
+    POST_REVIEWS_LONG_CONTENTS(false, 2030, "글자수가 초과되었습니다."),
+    POST_REVIEWS_EMPTY_CONTENTS(false,2031,"리뷰 내용을 작성해주세요"),
+    POST_REVIEWS_EMPTY_STAR(false,2032,"별점을 입력해주세요"),
+    POST_REVIEWS_EMPTY_STATUS(false,2033,"리뷰 상태를 확인해주세요"),
+    POST_REVIEWS_EXISTS_REVIEW(false,2034,"이미 리뷰를 입력하셨습니다."),
+
+
+    // [POST] /addresses
+    POST_ADDRESSES_EMPTY_TITLE(false, 2040, "배달주소 제목을 입력해주세요"),
+    POST_ADDRESSES_EMPTY_ROADNAME(false, 2041, "도로명주소를 입력해주세요"),
+    POST_ADDRESSES_EMPTY_DETAIL(false, 2042, "상세 주소를 입력해주세요"),
+    POST_ADDRESSES_EMPTY_LATITUDE(false, 2043, "위도가 없습니다."),
+    POST_ADDRESSES_EMPTY_LONGTITUDE(false, 2044, "경도가 없습니다."),
+
 
 
 

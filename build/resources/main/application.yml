@@ -12,3 +12,21 @@ spring:
     password: June0204!! # 변경해주세요
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
     # driver-class-name: com.mysql.jdbc.Driver # mysql 5버전
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 6dde27190208db5a6f50eb21dc2dc4d9
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}" # https://localhost:9090/kakao/callback
+            client-authentication-method: POST
+            authorization-grant-type: authorization_code
+            scope: profile_nickname, profile_image, account_email
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization_uri: https://kauth.kakao.com/oauth/authorize
+            token_uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user_name_attribute: id

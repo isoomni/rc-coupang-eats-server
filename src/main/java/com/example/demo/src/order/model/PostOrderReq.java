@@ -16,4 +16,7 @@ public class PostOrderReq {
     private String requestedTermToOwner;
     private String requestedTermToDeliveryMan;
     private String disposableItemReceivingStatus;
+    private int cartIdx;
+    private int menuIdx;
+    private int menuQuantity;
 }

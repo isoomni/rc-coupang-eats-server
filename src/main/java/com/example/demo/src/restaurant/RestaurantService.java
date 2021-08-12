@@ -32,7 +32,10 @@ public class RestaurantService {
      * @return BaseResponse<GetReviewRes>
      */
     public PostReviewRes createReview(PostReviewReq postReviewReq) throws BaseException { // 숙소정보를 생성하려고 하는데
-
+        //중복
+        if(restaurantProvider.checkReview(postReviewReq.getUserIdx()) ==1){
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
         try {
             int reviewIdx = restaurantDao.createReview(postReviewReq);
             return new PostReviewRes(reviewIdx);

@@ -15,5 +15,6 @@ public class Review {
     private String reviewImgStatus;
     private String reviewContents;
     private Double reviewStar;
+    private String status;
 
 }

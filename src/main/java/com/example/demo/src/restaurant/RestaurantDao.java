@@ -965,6 +965,19 @@ public class RestaurantDao {
         );
 
     }
+    /**
+     * 이미 존재하는 리뷰입니다.
+     * [GET] /restaurants/:restaurantIdx/reviews/:userIdx
+     * @return BaseResponse<GetReviewRes>
+     */
+    public int checkReview(int userIdx ){
+        String checkEmailQuery = "select exists(select orderIdx from RC_coupang_eats_d_Riley.Review where userIdx = ?)";
+        int checkReviewParams = userIdx;
+        return this.jdbcTemplate.queryForObject(checkEmailQuery,
+                int.class,
+                checkReviewParams);
+
+    }
 
     /**
      * 식당 리뷰 등록 API
